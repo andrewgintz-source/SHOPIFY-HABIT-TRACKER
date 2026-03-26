@@ -1,0 +1,839 @@
+{% comment %}
+  APEX — Hero Section
+  RPG-style entrepreneur operating system
+  File location: sections/apex-hero.liquid
+{% endcomment %}
+
+<style>
+  /* ── Reset & Root ───────────────────────────────────────────── */
+  #apex-hero-{{ section.id }} *,
+  #apex-hero-{{ section.id }} *::before,
+  #apex-hero-{{ section.id }} *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ── CSS Variables ──────────────────────────────────────────── */
+  #apex-hero-{{ section.id }} {
+    --apex-bg:       {{ section.settings.bg_color }};
+    --apex-bg2:      #0f0f15;
+    --apex-bg3:      #14141c;
+    --apex-gold:     {{ section.settings.accent_color }};
+    --apex-gold-dim: rgba(245, 197, 66, 0.12);
+    --apex-gold-glow:rgba(245, 197, 66, 0.35);
+    --apex-tx:       #e8eaf4;
+    --apex-tx2:      #7a8296;
+    --apex-tx3:      #3c4256;
+    --apex-border:   rgba(255, 255, 255, 0.07);
+    --apex-border2:  rgba(255, 255, 255, 0.13);
+    --apex-font-d:   'Bebas Neue', 'Impact', 'Arial Narrow', sans-serif;
+    --apex-font-m:   'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    --apex-font-s:   'Georgia', 'Times New Roman', serif;
+  }
+
+  /* ── Google Fonts ───────────────────────────────────────────── */
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+  /* ── Section Wrapper ────────────────────────────────────────── */
+  #apex-hero-{{ section.id }} {
+    position: relative;
+    background: var(--apex-bg);
+    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-family: var(--apex-font-m);
+    color: var(--apex-tx);
+    isolation: isolate;
+  }
+
+  /* ── Background Grid ────────────────────────────────────────── */
+  #apex-hero-{{ section.id }} .apex-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(245, 197, 66, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245, 197, 66, 0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Glow Orbs ──────────────────────────────────────────────── */
+  #apex-hero-{{ section.id }} .apex-orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    animation: apex-orb-pulse 10s ease-in-out infinite alternate;
+  }
+  #apex-hero-{{ section.id }} .apex-orb-1 {
+    width: 700px;
+    height: 700px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    background: radial-gradient(circle, rgba(245, 197, 66, 0.055) 0%, transparent 65%);
+  }
+  #apex-hero-{{ section.id }} .apex-orb-2 {
+    width: 400px;
+    height: 400px;
+    top: 20%;
+    right: 10%;
+    background: radial-gradient(circle, rgba(245, 197, 66, 0.025) 0%, transparent 65%);
+    animation-delay: -4s;
+    animation-duration: 7s;
+  }
+  @keyframes apex-orb-pulse {
+    from { transform: translate(-50%, -55%) scale(1); }
+    to   { transform: translate(-50%, -55%) scale(1.18); }
+  }
+
+  /* ── Noise Texture Overlay ──────────────────────────────────── */
+  #apex-hero-{{ section.id }}::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.028'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.45;
+  }
+
+  /* ── Inner Container ────────────────────────────────────────── */
+  #apex-hero-{{ section.id }} .apex-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 120px 48px 80px;
+    width: 100%;
+  }
+
+  /* ── Eyebrow Tag ────────────────────────────────────────────── */
+  #apex-hero-{{ section.id }} .apex-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--apex-font-m);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--apex-gold);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    padding: 7px 18px;
+    background: var(--apex-gold-dim);
+    border: 1px solid rgba(245, 197, 66, 0.22);
+    border-radius: 2px;
+    opacity: 0;
+    animation: apex-fade-up 0.9s 0.1s both;
+  }
+  #apex-hero-{{ section.id }} .apex-eyebrow-dot {
+    width: 5px;
+    height: 5px;
+    background: var(--apex-gold);
+    border-radius: 50%;
+    animation: apex-blink 1.8s ease-in-out infinite;
+  }
+  @keyframes apex-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.2; }
+  }
+
+  /* ── Headline ───────────────────────────────────────────────── */
+  #apex-hero-{{ section.id }} .apex-h1 {
+    font-family: var(--apex-font-d);
+    font-size: clamp(58px, 9vw, 128px);
+    line-height: 0.88;
+    letter-spacing: -0.01em;
+    color: var(--apex-tx);
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: apex-fade-up 0.9s 0.25s both;
+  }
+  #apex-hero-{{ section.id }} .apex-h1 .apex-h1-accent {
+    color: var(--apex-gold);
+    display: block;
+  }
+  #apex-hero-{{ section.id }} .apex-h1 .apex-h1-dim {
+    color: var(--apex-tx2);
+    display: block;
+    font-size: 0.55em;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  /* ── Subheadline ────────────────────────────────────────────── */
+  #apex-hero-{{ section.id }} .apex-sub {
+    font-family: var(--apex-font-m);
+    font-size: clamp(13px, 1.5vw, 15px);
+    color: var(--apex-tx2);
+    line-height: 1.9;
+    max-width: 540px;
+    letter-spacing: 0.025em;
+    margin-bottom: 18px;
+    opacity: 0;
+    animation: apex-fade-up 0.9s 0.4s both;
+  }
+  #apex-hero-{{ section.id }} .apex-sub strong {
+    color: var(--apex-tx);
+    font-weight: 500;
+  }
+
+  /* ── XP Tagline ─────────────────────────────────────────────── */
+  #apex-hero-{{ section.id }} .apex-xp-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--apex-font-m);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--apex-gold);
+    text-transform: uppercase;
+    margin-bottom: 44px;
+    opacity: 0;
+    animation: apex-fade-up 0.9s 0.52s both;
+  }
+  #apex-hero-{{ section.id }} .apex-xp-line::before,
+  #apex-hero-{{ section.id }} .apex-xp-line::after {
+    content: '';
+    flex: 0 0 20px;
+    height: 1px;
+    background: var(--apex-gold);
+    opacity: 0.5;
+  }
+
+  /* ── CTA Buttons ────────────────────────────────────────────── */
+  #apex-hero-{{ section.id }} .apex-btns {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 80px;
+    opacity: 0;
+    animation: apex-fade-up 0.9s 0.65s both;
+  }
+  #apex-hero-{{ section.id }} .apex-btn-primary {
+    display: inline-block;
+    padding: 16px 38px;
+    background: var(--apex-gold);
+    color: #0b0b0f;
+    font-family: var(--apex-font-d);
+    font-size: 20px;
+    letter-spacing: 0.07em;
+    line-height: 1;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
+  }
+  #apex-hero-{{ section.id }} .apex-btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.18), transparent);
+    pointer-events: none;
+  }
+  #apex-hero-{{ section.id }} .apex-btn-primary:hover {
+    background: #ffd966;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 48px var(--apex-gold-glow);
+  }
+  #apex-hero-{{ section.id }} .apex-btn-secondary {
+    display: inline-block;
+    padding: 16px 38px;
+    background: none;
+    color: var(--apex-tx);
+    font-family: var(--apex-font-d);
+    font-size: 20px;
+    letter-spacing: 0.07em;
+    line-height: 1;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 0;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.25s, color 0.25s;
+  }
+  #apex-hero-{{ section.id }} .apex-btn-secondary:hover {
+    border-color: var(--apex-gold);
+    color: var(--apex-gold);
+  }
+
+  /* ── Stats Bar ──────────────────────────────────────────────── */
+  #apex-hero-{{ section.id }} .apex-stats {
+    display: flex;
+    border: 1px solid var(--apex-border2);
+    background: rgba(15, 15, 21, 0.6);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    animation: apex-fade-up 0.9s 0.8s both;
+  }
+  #apex-hero-{{ section.id }} .apex-stat {
+    flex: 1;
+    padding: 28px 24px;
+    border-right: 1px solid var(--apex-border);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s;
+  }
+  #apex-hero-{{ section.id }} .apex-stat:last-child {
+    border-right: none;
+  }
+  #apex-hero-{{ section.id }} .apex-stat::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--apex-gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  #apex-hero-{{ section.id }} .apex-stat:hover {
+    background: var(--apex-gold-dim);
+  }
+  #apex-hero-{{ section.id }} .apex-stat:hover::before {
+    opacity: 1;
+  }
+  #apex-hero-{{ section.id }} .apex-stat-value {
+    font-family: var(--apex-font-d);
+    font-size: clamp(32px, 4vw, 48px);
+    color: var(--apex-gold);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    display: block;
+    margin-bottom: 6px;
+  }
+  #apex-hero-{{ section.id }} .apex-stat-label {
+    font-family: var(--apex-font-m);
+    font-size: 9px;
+    color: var(--apex-tx2);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.5;
+    display: block;
+  }
+
+  /* ── Animated XP Bar (decorative) ──────────────────────────── */
+  #apex-hero-{{ section.id }} .apex-xp-bar-wrap {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--apex-border);
+    z-index: 3;
+  }
+  #apex-hero-{{ section.id }} .apex-xp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--apex-gold), #ffd966, var(--apex-gold));
+    background-size: 200% 100%;
+    animation: apex-xp-shimmer 3s linear infinite;
+    width: {{ section.settings.xp_bar_percent }}%;
+    transition: width 1s ease;
+  }
+  @keyframes apex-xp-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ── Rank Badge (top right corner decoration) ───────────────── */
+  #apex-hero-{{ section.id }} .apex-rank-badge {
+    position: absolute;
+    top: 36px;
+    right: 48px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    opacity: 0;
+    animation: apex-fade-in 1s 1s both;
+  }
+  #apex-hero-{{ section.id }} .apex-rank-label {
+    font-family: var(--apex-font-m);
+    font-size: 8px;
+    letter-spacing: 0.24em;
+    color: var(--apex-tx3);
+    text-transform: uppercase;
+  }
+  #apex-hero-{{ section.id }} .apex-rank-name {
+    font-family: var(--apex-font-d);
+    font-size: 28px;
+    color: var(--apex-gold);
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+  #apex-hero-{{ section.id }} .apex-rank-bar {
+    width: 120px;
+    height: 2px;
+    background: var(--apex-border2);
+    overflow: hidden;
+  }
+  #apex-hero-{{ section.id }} .apex-rank-bar-fill {
+    height: 100%;
+    background: var(--apex-gold);
+    width: 68%;
+    position: relative;
+  }
+  #apex-hero-{{ section.id }} .apex-rank-bar-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: apex-xp-shimmer 2s linear infinite;
+    background-size: 200% 100%;
+  }
+  #apex-hero-{{ section.id }} .apex-rank-xp {
+    font-family: var(--apex-font-m);
+    font-size: 9px;
+    color: var(--apex-tx2);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Ticker / Marquee ───────────────────────────────────────── */
+  #apex-hero-{{ section.id }} .apex-ticker {
+    position: absolute;
+    bottom: 3px;
+    left: 0;
+    right: 0;
+    height: 36px;
+    background: var(--apex-gold);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    z-index: 3;
+    {% unless section.settings.show_ticker %}
+      display: none;
+    {% endunless %}
+  }
+  #apex-hero-{{ section.id }} .apex-ticker-track {
+    display: flex;
+    white-space: nowrap;
+    animation: apex-ticker 28s linear infinite;
+    flex-shrink: 0;
+  }
+  #apex-hero-{{ section.id }} .apex-ticker-item {
+    font-family: var(--apex-font-d);
+    font-size: 14px;
+    letter-spacing: 0.14em;
+    color: #0b0b0f;
+    padding: 0 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  #apex-hero-{{ section.id }} .apex-ticker-item::after {
+    content: '◆';
+    font-size: 6px;
+    opacity: 0.5;
+  }
+  @keyframes apex-ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── Keyframes ──────────────────────────────────────────────── */
+  @keyframes apex-fade-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes apex-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ── Responsive ─────────────────────────────────────────────── */
+  @media screen and (max-width: 900px) {
+    #apex-hero-{{ section.id }} .apex-inner {
+      padding: 100px 28px 80px;
+    }
+    #apex-hero-{{ section.id }} .apex-rank-badge {
+      display: none;
+    }
+    #apex-hero-{{ section.id }} .apex-stats {
+      flex-wrap: wrap;
+    }
+    #apex-hero-{{ section.id }} .apex-stat {
+      flex: 1 1 50%;
+      border-right: none;
+      border-bottom: 1px solid var(--apex-border);
+    }
+    #apex-hero-{{ section.id }} .apex-stat:nth-child(odd) {
+      border-right: 1px solid var(--apex-border);
+    }
+    #apex-hero-{{ section.id }} .apex-stat:nth-last-child(-n+2) {
+      border-bottom: none;
+    }
+  }
+  @media screen and (max-width: 600px) {
+    #apex-hero-{{ section.id }} .apex-inner {
+      padding: 90px 20px 70px;
+    }
+    #apex-hero-{{ section.id }} .apex-btns {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    #apex-hero-{{ section.id }} .apex-btn-primary,
+    #apex-hero-{{ section.id }} .apex-btn-secondary {
+      width: 100%;
+      text-align: center;
+    }
+    #apex-hero-{{ section.id }} .apex-stat {
+      flex: 1 1 100%;
+      border-right: none;
+      border-bottom: 1px solid var(--apex-border);
+    }
+    #apex-hero-{{ section.id }} .apex-stat:last-child {
+      border-bottom: none;
+    }
+    #apex-hero-{{ section.id }} .apex-stat:nth-child(odd) {
+      border-right: none;
+    }
+  }
+</style>
+
+<section id="apex-hero-{{ section.id }}" aria-label="{{ section.settings.headline | escape }}">
+
+  <!-- Background layers -->
+  <div class="apex-grid-bg" aria-hidden="true"></div>
+  <div class="apex-orb apex-orb-1" aria-hidden="true"></div>
+  <div class="apex-orb apex-orb-2" aria-hidden="true"></div>
+
+  <!-- Rank Badge (top right) -->
+  <div class="apex-rank-badge" aria-hidden="true">
+    <span class="apex-rank-label">Current Rank</span>
+    <span class="apex-rank-name">{{ section.settings.rank_name }}</span>
+    <div class="apex-rank-bar">
+      <div class="apex-rank-bar-fill"></div>
+    </div>
+    <span class="apex-rank-xp">{{ section.settings.rank_xp }}</span>
+  </div>
+
+  <!-- Main content -->
+  <div class="apex-inner">
+
+    <!-- Eyebrow -->
+    <div class="apex-eyebrow">
+      <span class="apex-eyebrow-dot" aria-hidden="true"></span>
+      {{ section.settings.eyebrow_text }}
+    </div>
+
+    <!-- Headline -->
+    <h1 class="apex-h1">
+      {{ section.settings.headline | newline_to_br }}
+    </h1>
+
+    <!-- Subheadline -->
+    <p class="apex-sub">
+      {{ section.settings.subheadline }}
+    </p>
+
+    <!-- XP Tagline -->
+    <div class="apex-xp-line" aria-label="{{ section.settings.xp_tagline }}">
+      {{ section.settings.xp_tagline }}
+    </div>
+
+    <!-- Buttons -->
+    <div class="apex-btns">
+      <a
+        href="{{ section.settings.btn_primary_url }}"
+        class="apex-btn-primary"
+        {% if section.settings.btn_primary_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+      >
+        {{ section.settings.btn_primary_text }}
+      </a>
+      <a
+        href="{{ section.settings.btn_secondary_url }}"
+        class="apex-btn-secondary"
+        {% if section.settings.btn_secondary_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+      >
+        {{ section.settings.btn_secondary_text }}
+      </a>
+    </div>
+
+    <!-- Stats Bar -->
+    {% if section.settings.show_stats %}
+    <div class="apex-stats" role="list" aria-label="APEX Performance Stats">
+      {% for block in section.blocks %}
+        {% if block.type == 'stat' %}
+          <div class="apex-stat" role="listitem" {{ block.shopify_attributes }}>
+            <span class="apex-stat-value">{{ block.settings.stat_value }}</span>
+            <span class="apex-stat-label">{{ block.settings.stat_label }}</span>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div><!-- /.apex-inner -->
+
+  <!-- Animated XP bar at bottom -->
+  <div class="apex-xp-bar-wrap" aria-hidden="true">
+    <div class="apex-xp-bar-fill"></div>
+  </div>
+
+  <!-- Ticker -->
+  {% if section.settings.show_ticker %}
+  <div class="apex-ticker" aria-hidden="true">
+    <div class="apex-ticker-track">
+      <span class="apex-ticker-item">XP System</span>
+      <span class="apex-ticker-item">Daily Missions</span>
+      <span class="apex-ticker-item">Skill Trees</span>
+      <span class="apex-ticker-item">Streak Multipliers</span>
+      <span class="apex-ticker-item">Rank Progression</span>
+      <span class="apex-ticker-item">Habit Ledger</span>
+      <span class="apex-ticker-item">War Room Timer</span>
+      <span class="apex-ticker-item">Field Journal</span>
+      <span class="apex-ticker-item">Global Leaderboard</span>
+      <span class="apex-ticker-item">Achievement Engine</span>
+      <span class="apex-ticker-item">XP System</span>
+      <span class="apex-ticker-item">Daily Missions</span>
+      <span class="apex-ticker-item">Skill Trees</span>
+      <span class="apex-ticker-item">Streak Multipliers</span>
+      <span class="apex-ticker-item">Rank Progression</span>
+      <span class="apex-ticker-item">Habit Ledger</span>
+      <span class="apex-ticker-item">War Room Timer</span>
+      <span class="apex-ticker-item">Field Journal</span>
+      <span class="apex-ticker-item">Global Leaderboard</span>
+      <span class="apex-ticker-item">Achievement Engine</span>
+    </div>
+  </div>
+  {% endif %}
+
+</section>
+
+{% schema %}
+{
+  "name": "APEX Hero",
+  "tag": "section",
+  "class": "apex-hero-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Brand Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#0b0b0f"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color (Gold)",
+      "default": "#f5c542"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow_text",
+      "label": "Eyebrow Label",
+      "default": "The Entrepreneur's Operating System"
+    },
+    {
+      "type": "textarea",
+      "id": "headline",
+      "label": "Headline",
+      "info": "Use line breaks to control wrapping. The last word will auto-highlight.",
+      "default": "Stop Surviving.\nStart Leveling Up."
+    },
+    {
+      "type": "textarea",
+      "id": "subheadline",
+      "label": "Subheadline",
+      "default": "APEX turns your life into a system — track habits, plan your day, build your business, and evolve your entrepreneurial character."
+    },
+    {
+      "type": "text",
+      "id": "xp_tagline",
+      "label": "XP Tagline (small line)",
+      "default": "XP. Missions. Skill Trees. Real Progress."
+    },
+    {
+      "type": "header",
+      "content": "Primary Button"
+    },
+    {
+      "type": "text",
+      "id": "btn_primary_text",
+      "label": "Button Text",
+      "default": "Start Your Ascent"
+    },
+    {
+      "type": "url",
+      "id": "btn_primary_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "btn_primary_new_tab",
+      "label": "Open in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Secondary Button"
+    },
+    {
+      "type": "text",
+      "id": "btn_secondary_text",
+      "label": "Button Text",
+      "default": "View System"
+    },
+    {
+      "type": "url",
+      "id": "btn_secondary_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "btn_secondary_new_tab",
+      "label": "Open in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Stats Bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stats",
+      "label": "Show Stats Bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Rank Badge (top right)"
+    },
+    {
+      "type": "text",
+      "id": "rank_name",
+      "label": "Rank Name",
+      "default": "APEX CLASS"
+    },
+    {
+      "type": "text",
+      "id": "rank_xp",
+      "label": "XP Display",
+      "default": "3,500 / 5,500 XP"
+    },
+    {
+      "type": "header",
+      "content": "XP Progress Bar"
+    },
+    {
+      "type": "range",
+      "id": "xp_bar_percent",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "XP Bar Fill Percentage",
+      "default": 68
+    },
+    {
+      "type": "header",
+      "content": "Ticker"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_ticker",
+      "label": "Show Marquee Ticker",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        {
+          "type": "text",
+          "id": "stat_value",
+          "label": "Stat Value",
+          "default": "12,400+"
+        },
+        {
+          "type": "text",
+          "id": "stat_label",
+          "label": "Stat Label",
+          "default": "Active Operators"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APEX Hero",
+      "blocks": [
+        {
+          "type": "stat",
+          "settings": {
+            "stat_value": "12,400+",
+            "stat_label": "Active Operators"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "stat_value": "4.2M+",
+            "stat_label": "Habits Completed"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "stat_value": "10",
+            "stat_label": "Rank Levels"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "stat_value": "98%",
+            "stat_label": "Report Breakthrough"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
