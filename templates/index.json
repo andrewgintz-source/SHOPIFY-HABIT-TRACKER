@@ -786,6 +786,66 @@
         "padding_top": 100,
         "padding_bottom": 100
       }
+    },
+    "apex_gate2_j8gJyc": {
+      "type": "apex-gate2",
+      "blocks": {
+        "badge_AJWBbn": {
+          "type": "badge",
+          "settings": {
+            "text": "No spam. Ever."
+          }
+        },
+        "badge_7ihHnW": {
+          "type": "badge",
+          "settings": {
+            "text": "50% off locked on join"
+          }
+        },
+        "badge_LCJfmr": {
+          "type": "badge",
+          "settings": {
+            "text": "Cancel anytime"
+          }
+        },
+        "badge_FdQBcF": {
+          "type": "badge",
+          "settings": {
+            "text": "First access at launch"
+          }
+        }
+      },
+      "block_order": [
+        "badge_AJWBbn",
+        "badge_7ihHnW",
+        "badge_LCJfmr",
+        "badge_FdQBcF"
+      ],
+      "name": "APEX Gate",
+      "settings": {
+        "bg_color": "#0b0b0f",
+        "accent_color": "#f5c542",
+        "eyebrow": "FOUNDING ACCESS",
+        "offer_text": "50% Off for Early Operators",
+        "headline_l1": "Join Early.",
+        "headline_l2": "Lock 50% Off. Enter APEX First.",
+        "subheadline": "APEX is the level-up system for young entrepreneurs who want discipline, structure, business focus, and real progress.",
+        "divider_text": "Secure your founding spot",
+        "email_placeholder": "Enter your email",
+        "btn_text": "Claim Founding Access",
+        "success_msg": "✓ You're in. Your 50% founding discount is locked. We'll notify you before launch.",
+        "current_count": 327,
+        "goal_count": 500,
+        "count_label": "operators already inside",
+        "count_dur": 2600,
+        "scarcity": "Founding pricing disappears at public launch.",
+        "scarcity_em": "disappears at public launch.",
+        "statement": "This is not a waitlist. This is founding access.",
+        "statement_em": "founding access.",
+        "particle_count": 40,
+        "pad_top": 120,
+        "pad_bot": 100
+      }
     }
   },
   "order": [
@@ -795,6 +855,7 @@
     "apex_tools_L4F4G7",
     "apex_gamification_K9y7fH",
     "apex_pricing_iE9YK3",
-    "apex_testimonials_FWCVUF"
+    "apex_testimonials_FWCVUF",
+    "apex_gate2_j8gJyc"
   ]
 }
