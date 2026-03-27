@@ -71,13 +71,15 @@
 }
 
 .apex-page {
-  background: var(--k);
-  color: var(--tx);
-  font-family: var(--fm);
-  overflow-x: hidden;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  cursor: none;
+@media (pointer: fine) {
+  body { cursor: none; }
+  input, button, a, select, textarea { cursor: none; }
+}
+
+@media (pointer: coarse), (max-width: 900px) {
+  body { cursor: auto; }
+  input, button, a, select, textarea { cursor: auto; }
+  #cur, #cur2 { display: none !important; }
 }
 
 .apex-page ::selection { background: var(--acid); color: var(--k); }
