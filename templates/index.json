@@ -47,6 +47,7 @@
         "stat_Dnx8wK",
         "stat_jTA8Kz"
       ],
+      "disabled": true,
       "name": "APEX Hero",
       "settings": {
         "bg_color": "#0b0b0f",
@@ -136,6 +137,7 @@
         "problem_VDXxWg",
         "problem_FCncym"
       ],
+      "disabled": true,
       "name": "APEX Problem",
       "settings": {
         "bg_color": "#0b0b0f",
@@ -190,6 +192,7 @@
         "step_cjMnE6",
         "step_YReAA3"
       ],
+      "disabled": true,
       "name": "APEX How It Works",
       "settings": {
         "bg_color": "#0b0b0f",
@@ -316,6 +319,7 @@
         "strip_stat_EQFwNT",
         "strip_stat_XxXbYm"
       ],
+      "disabled": true,
       "name": "APEX Tools",
       "settings": {
         "bg_color": "#0b0b0f",
@@ -495,6 +499,7 @@
         "rank_XrBe9V",
         "rank_H6e4DC"
       ],
+      "disabled": true,
       "name": "APEX Gamification",
       "settings": {
         "bg_color": "#0b0b0f",
@@ -690,6 +695,7 @@
         "compare_row_kpPRLh",
         "compare_row_TwX7Ag"
       ],
+      "disabled": true,
       "name": "APEX Pricing",
       "settings": {
         "bg_color": "#0b0b0f",
@@ -776,6 +782,7 @@
         "proof_stat_hYFHBB",
         "proof_stat_hEHLT7"
       ],
+      "disabled": true,
       "name": "APEX Testimonials",
       "settings": {
         "bg_color": "#0b0b0f",
