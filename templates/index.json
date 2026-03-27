@@ -704,6 +704,88 @@
         "padding_top": 100,
         "padding_bottom": 100
       }
+    },
+    "apex_testimonials_FWCVUF": {
+      "type": "apex-testimonials",
+      "blocks": {
+        "testimonial_RB64dM": {
+          "type": "testimonial",
+          "settings": {
+            "days_in": "134 days in",
+            "quote": "I've tried every productivity system. Nothing made me confront my own habits like APEX did. The XP system rewired how I show up. 134 days in, shipped 3 products, raised a pre-seed.",
+            "avatar_emoji": "💪",
+            "name": "Marcus T.",
+            "handle": "// Founder · Level 8 · 134-day streak"
+          }
+        },
+        "testimonial_p7Gitz": {
+          "type": "testimonial",
+          "settings": {
+            "days_in": "89 days in",
+            "quote": "The focus timer and the field journal together are something I've never seen in any other tool. I finished my marathon training block and closed a $400K round in the same quarter. APEX is infrastructure.",
+            "avatar_emoji": "🚀",
+            "name": "Priya K.",
+            "handle": "// Founder & Athlete · Level 6 · 89-day streak"
+          }
+        },
+        "testimonial_fapgdg": {
+          "type": "testimonial",
+          "settings": {
+            "days_in": "God Mode achieved",
+            "quote": "Eight months. Level 10. God Mode. Not because of the badge. Because the audit trail I built over those eight months is the most honest document of my life I've ever seen.",
+            "avatar_emoji": "🌟",
+            "name": "Jordan L.",
+            "handle": "// Engineer · Level 10 · God Mode"
+          }
+        },
+        "proof_stat_RgmtMc": {
+          "type": "proof_stat",
+          "settings": {
+            "value": "12,400+",
+            "label": "Active Operators"
+          }
+        },
+        "proof_stat_f7hEc9": {
+          "type": "proof_stat",
+          "settings": {
+            "value": "4.2M+",
+            "label": "Habits Completed"
+          }
+        },
+        "proof_stat_hYFHBB": {
+          "type": "proof_stat",
+          "settings": {
+            "value": "98%",
+            "label": "Report Breakthrough"
+          }
+        },
+        "proof_stat_hEHLT7": {
+          "type": "proof_stat",
+          "settings": {
+            "value": "21d",
+            "label": "Avg Streak Record"
+          }
+        }
+      },
+      "block_order": [
+        "testimonial_RB64dM",
+        "testimonial_p7Gitz",
+        "testimonial_fapgdg",
+        "proof_stat_RgmtMc",
+        "proof_stat_f7hEc9",
+        "proof_stat_hYFHBB",
+        "proof_stat_hEHLT7"
+      ],
+      "name": "APEX Testimonials",
+      "settings": {
+        "bg_color": "#0b0b0f",
+        "accent_color": "#f5c542",
+        "section_tag": "Operators Speaking",
+        "headline": "Results from the field.",
+        "headline_accent": "the field.",
+        "padding_top": 100,
+        "padding_bottom": 100
+      }
     }
   },
   "order": [
@@ -712,6 +794,7 @@
     "apex_how_it_works_BeE66K",
     "apex_tools_L4F4G7",
     "apex_gamification_K9y7fH",
-    "apex_pricing_iE9YK3"
+    "apex_pricing_iE9YK3",
+    "apex_testimonials_FWCVUF"
   ]
 }
