@@ -150,10 +150,66 @@
         "padding_top": 100,
         "padding_bottom": 100
       }
+    },
+    "apex_how_it_works_BeE66K": {
+      "type": "apex-how-it-works",
+      "blocks": {
+        "step_yVjVjb": {
+          "type": "step",
+          "settings": {
+            "phase_label": "Phase One",
+            "icon": "🔥",
+            "title": "Track Your Habits",
+            "description": "Deploy your personal habit stack. Every behavior you track earns XP and builds a 28-day audit trail you can't argue with.",
+            "bullets": "Build your habit ledger | Earn XP per completion | Streak multipliers up to 2×"
+          }
+        },
+        "step_cjMnE6": {
+          "type": "step",
+          "settings": {
+            "phase_label": "Phase Two",
+            "icon": "🎯",
+            "title": "Complete Missions",
+            "description": "Run your daily task ledger, focus timer sessions, and field journal. Every action logged is a rep in the bank.",
+            "bullets": "Daily mission planner | War room focus timer | Field journal for reflection"
+          }
+        },
+        "step_YReAA3": {
+          "type": "step",
+          "settings": {
+            "phase_label": "Phase Three",
+            "icon": "⚡",
+            "title": "Level Up Your Business",
+            "description": "Watch your rank climb from Initiate to God Mode. Unlock achievements, rise on the global leaderboard, and build the identity of an elite operator.",
+            "bullets": "10 ranks from Initiate to God Mode | 15 achievement badges | Global leaderboard"
+          }
+        }
+      },
+      "block_order": [
+        "step_yVjVjb",
+        "step_cjMnE6",
+        "step_YReAA3"
+      ],
+      "name": "APEX How It Works",
+      "settings": {
+        "bg_color": "#0b0b0f",
+        "accent_color": "#f5c542",
+        "section_tag": "The System",
+        "headline": "Three steps to operating at your ceiling.",
+        "headline_accent": "your ceiling.",
+        "subtext": "APEX is not a to-do app. It's an operating system that runs your day, tracks your growth, and levels you up.",
+        "bottom_text": "Most systems ask you to show up for them. APEX shows up for you — with a daily mission, a running score, and a rank that reflects exactly who you are.",
+        "cta_text": "Start Your Ascent",
+        "cta_url": "",
+        "cta_new_tab": false,
+        "padding_top": 100,
+        "padding_bottom": 100
+      }
     }
   },
   "order": [
     "apex_hero_XC4PbB",
-    "apex_problem_AF4ffM"
+    "apex_problem_AF4ffM",
+    "apex_how_it_works_BeE66K"
   ]
 }
