@@ -328,12 +328,194 @@
         "padding_top": 100,
         "padding_bottom": 100
       }
+    },
+    "apex_gamification_K9y7fH": {
+      "type": "apex-gamification",
+      "blocks": {
+        "mechanic_KGk7gh": {
+          "type": "mechanic",
+          "settings": {
+            "icon": "⚡",
+            "title": "XP System",
+            "description": "Every habit, task, and focus session earns XP. Streaks activate multipliers up to 2×. Your score is a direct reflection of your consistency.",
+            "pills": "+10–75 XP per habit | +50 XP focus sessions | 2× at 30-day streak"
+          }
+        },
+        "mechanic_6NAmCT": {
+          "type": "mechanic",
+          "settings": {
+            "icon": "🌳",
+            "title": "Skill Trees",
+            "description": "Unlock categories — Mind, Body, Craft, Spirit, Grind, Social. Each habit feeds a branch. Build a balanced operator or go deep on one domain.",
+            "pills": "6 skill domains | Visual progress trees | Domain XP tracking"
+          }
+        },
+        "mechanic_ifg6b4": {
+          "type": "mechanic",
+          "settings": {
+            "icon": "🔥",
+            "title": "Streak Engine",
+            "description": "Build chains that activate compounding XP bonuses. Break the chain and lose the rate. The psychology is designed to make missing feel costly.",
+            "pills": "1.25× at 3 days | 1.5× at 7 | 1.75× at 14 | 2× at 30"
+          }
+        },
+        "mechanic_W8zbDc": {
+          "type": "mechanic",
+          "settings": {
+            "icon": "🏆",
+            "title": "Achievement Badges",
+            "description": "15 commendations tied to real milestones — from First Contact on day one to God Mode at Level 10. Each earns 100 bonus XP. Earned, never bought.",
+            "pills": "15 badges | +100 XP each | Permanent record"
+          }
+        },
+        "rank_LwqfG6": {
+          "type": "rank",
+          "settings": {
+            "rank_num": "01",
+            "rank_name": "INITIATE",
+            "rank_desc": "Audit opened. Ledger blank. Everything starts here.",
+            "xp_req": "0 XP",
+            "featured": false,
+            "is_god": false
+          }
+        },
+        "rank_QqWk7n": {
+          "type": "rank",
+          "settings": {
+            "rank_num": "02",
+            "rank_name": "OPERATOR",
+            "rank_desc": "Learning the system. Building the habit of the habit.",
+            "xp_req": "200 XP",
+            "featured": false,
+            "is_god": false
+          }
+        },
+        "rank_GLkgFU": {
+          "type": "rank",
+          "settings": {
+            "rank_num": "03",
+            "rank_name": "SPECIALIST",
+            "rank_desc": "Consistency is no longer impressive — it's expected. By you.",
+            "xp_req": "500 XP",
+            "featured": false,
+            "is_god": false
+          }
+        },
+        "rank_xrhaiE": {
+          "type": "rank",
+          "settings": {
+            "rank_num": "04",
+            "rank_name": "VANGUARD",
+            "rank_desc": "Ahead of 90% of people. Not by talent. By showing up.",
+            "xp_req": "1,000 XP",
+            "featured": false,
+            "is_god": false
+          }
+        },
+        "rank_kwAPc8": {
+          "type": "rank",
+          "settings": {
+            "rank_num": "05",
+            "rank_name": "ELITE",
+            "rank_desc": "Your daily output is genuinely exceptional. The ledger proves it.",
+            "xp_req": "2,000 XP",
+            "featured": false,
+            "is_god": false
+          }
+        },
+        "rank_BhmreC": {
+          "type": "rank",
+          "settings": {
+            "rank_num": "06",
+            "rank_name": "APEX CLASS",
+            "rank_desc": "The inner circle. You operate at a level most people only fantasize about.",
+            "xp_req": "3,500 XP",
+            "featured": true,
+            "is_god": false
+          }
+        },
+        "rank_gnFYHY": {
+          "type": "rank",
+          "settings": {
+            "rank_num": "07",
+            "rank_name": "LEGEND",
+            "rank_desc": "Exceptional consistency over a long period. Rare. The data confirms it.",
+            "xp_req": "5,500 XP",
+            "featured": false,
+            "is_god": false
+          }
+        },
+        "rank_BQY7qk": {
+          "type": "rank",
+          "settings": {
+            "rank_num": "08",
+            "rank_name": "TRANSCENDENT",
+            "rank_desc": "Discipline built as deep infrastructure — not surface behavior.",
+            "xp_req": "8,000 XP",
+            "featured": false,
+            "is_god": false
+          }
+        },
+        "rank_XrBe9V": {
+          "type": "rank",
+          "settings": {
+            "rank_num": "09",
+            "rank_name": "MYTHIC",
+            "rank_desc": "Almost unreachable. The audit trail here is a document of transformation.",
+            "xp_req": "12,000 XP",
+            "featured": false,
+            "is_god": false
+          }
+        },
+        "rank_H6e4DC": {
+          "type": "rank",
+          "settings": {
+            "rank_num": "10",
+            "rank_name": "GOD MODE",
+            "rank_desc": "The absolute ceiling. Fewer than 0.1% of operators reach this. If you get here, you know what it cost.",
+            "xp_req": "20,000 XP",
+            "featured": false,
+            "is_god": true
+          }
+        }
+      },
+      "block_order": [
+        "mechanic_KGk7gh",
+        "mechanic_6NAmCT",
+        "mechanic_ifg6b4",
+        "mechanic_W8zbDc",
+        "rank_LwqfG6",
+        "rank_QqWk7n",
+        "rank_GLkgFU",
+        "rank_xrhaiE",
+        "rank_kwAPc8",
+        "rank_BhmreC",
+        "rank_gnFYHY",
+        "rank_BQY7qk",
+        "rank_XrBe9V",
+        "rank_H6e4DC"
+      ],
+      "name": "APEX Gamification",
+      "settings": {
+        "bg_color": "#0b0b0f",
+        "accent_color": "#f5c542",
+        "section_tag": "The Game Layer",
+        "headline": "Your life. Gamified.",
+        "headline_accent": "Gamified.",
+        "subtext": "APEX borrows the most powerful motivation mechanic ever invented — the game loop — and applies it to real life. XP. Streaks. Ranks. Skill trees. The discipline becomes addictive.",
+        "demo_rank": "APEX CLASS",
+        "demo_xp": "3,840 XP",
+        "xp_bar_pct": 72,
+        "padding_top": 100,
+        "padding_bottom": 100
+      }
     }
   },
   "order": [
     "apex_hero_XC4PbB",
     "apex_problem_AF4ffM",
     "apex_how_it_works_BeE66K",
-    "apex_tools_L4F4G7"
+    "apex_tools_L4F4G7",
+    "apex_gamification_K9y7fH"
   ]
 }
