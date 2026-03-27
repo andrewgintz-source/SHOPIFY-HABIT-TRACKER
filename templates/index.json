@@ -853,6 +853,36 @@
         "pad_top": 32,
         "pad_bot": 32
       }
+    },
+    "apex_fullpage_Fy6cDM": {
+      "type": "apex-fullpage",
+      "name": "APEX Full Page",
+      "settings": {
+        "app_url": "",
+        "discord_url": "",
+        "twitter_url": "",
+        "support_email": "hello@apexaudit.com",
+        "hero_tag": "The Discipline Audit",
+        "hero_h1_line1": "STOP",
+        "hero_h1_line2": "SURVIVING.",
+        "hero_h1_line3": "Start auditing.",
+        "hero_sub": "Most people are in the red. Their daily actions — what they actually do versus what they claim to want — don't match. APEX is the audit that exposes the gap and forces you to close it.\n\nEvery day is a financial statement. Are you profitable?",
+        "hero_btn_primary": "OPEN YOUR AUDIT →",
+        "hero_btn_secondary": "See Plans",
+        "stat1_val": "12K+",
+        "stat1_lbl": "Operators currently auditing",
+        "stat2_val": "4.2M",
+        "stat2_lbl": "Assets completed since launch",
+        "stat3_val": "98%",
+        "stat3_lbl": "Report improved output within 21d",
+        "operator_count": "12,400",
+        "price_op_mo": "12",
+        "price_op_ann": "7",
+        "price_op_yr": "84",
+        "price_ap_mo": "29",
+        "price_ap_ann": "17",
+        "price_ap_yr": "204"
+      }
     }
   },
   "order": [
@@ -863,6 +893,7 @@
     "apex_gamification_K9y7fH",
     "apex_pricing_iE9YK3",
     "apex_testimonials_FWCVUF",
-    "apex_gate2_j8gJyc"
+    "apex_gate2_j8gJyc",
+    "apex_fullpage_Fy6cDM"
   ]
 }
