@@ -1,0 +1,292 @@
+{% comment %}
+  APEX — Problem Section
+  File: sections/apex-problem.liquid
+{% endcomment %}
+
+<style>
+  #apex-problem-{{ section.id }} *,
+  #apex-problem-{{ section.id }} *::before,
+  #apex-problem-{{ section.id }} *::after {
+    box-sizing: border-box; margin: 0; padding: 0;
+  }
+  #apex-problem-{{ section.id }} {
+    --gold: {{ section.settings.accent_color }};
+    --gd: rgba(245,197,66,.12);
+    --bg: {{ section.settings.bg_color }};
+    --bg2: #0f0f15;
+    --bg3: #14141c;
+    --border: rgba(255,255,255,.07);
+    --border2: rgba(255,255,255,.13);
+    --tx: #e8eaf4;
+    --tx2: #7a8296;
+    --tx3: #3c4256;
+    --fd: 'Bebas Neue','Impact',sans-serif;
+    --fm: 'JetBrains Mono','Fira Code','Courier New',monospace;
+    --fs: 'Georgia',serif;
+    background: var(--bg);
+    color: var(--tx);
+    font-family: var(--fm);
+    position: relative;
+    overflow: hidden;
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+  /* grid bg */
+  #apex-problem-{{ section.id }} .ap-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(245,197,66,.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(245,197,66,.03) 1px,transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent);
+    pointer-events: none; z-index: 0;
+  }
+  #apex-problem-{{ section.id }} .ap-inner {
+    position: relative; z-index: 1;
+    max-width: 1160px; margin: 0 auto; padding: 0 48px;
+  }
+
+  /* top rule */
+  #apex-problem-{{ section.id }} .ap-rule {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 56px;
+  }
+  #apex-problem-{{ section.id }} .ap-rule-line {
+    flex: 1; height: 1px; background: var(--border2);
+  }
+  #apex-problem-{{ section.id }} .ap-rule-tag {
+    font-family: var(--fm); font-size: 10px; letter-spacing: .26em;
+    color: var(--gold); text-transform: uppercase;
+    padding: 6px 16px;
+    background: var(--gd);
+    border: 1px solid rgba(245,197,66,.2);
+  }
+
+  /* layout */
+  #apex-problem-{{ section.id }} .ap-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  /* left — headline */
+  #apex-problem-{{ section.id }} .ap-headline {
+    font-family: var(--fd);
+    font-size: clamp(48px, 6vw, 84px);
+    line-height: .9;
+    letter-spacing: -.01em;
+    color: var(--tx);
+    margin-bottom: 24px;
+  }
+  #apex-problem-{{ section.id }} .ap-headline .ap-hl-accent { color: var(--gold); }
+  #apex-problem-{{ section.id }} .ap-eyebrow-sub {
+    font-family: var(--fm); font-size: 12px; color: var(--tx2);
+    line-height: 1.85; letter-spacing: .025em; margin-bottom: 36px;
+    max-width: 420px;
+  }
+  #apex-problem-{{ section.id }} .ap-eyebrow-sub strong { color: var(--tx); font-weight: 500; }
+
+  /* stat stack */
+  #apex-problem-{{ section.id }} .ap-left-stat {
+    display: flex; flex-direction: column; gap: 0;
+    border: 1px solid var(--border2);
+  }
+  #apex-problem-{{ section.id }} .ap-ls-item {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 14px;
+    transition: background .25s;
+  }
+  #apex-problem-{{ section.id }} .ap-ls-item:last-child { border-bottom: none; }
+  #apex-problem-{{ section.id }} .ap-ls-item:hover { background: var(--gd); }
+  #apex-problem-{{ section.id }} .ap-ls-num {
+    font-family: var(--fd); font-size: 32px; color: var(--gold);
+    line-height: 1; flex-shrink: 0; width: 40px;
+  }
+  #apex-problem-{{ section.id }} .ap-ls-text {
+    font-family: var(--fm); font-size: 11px; color: var(--tx2);
+    line-height: 1.6; letter-spacing: .04em;
+  }
+  #apex-problem-{{ section.id }} .ap-ls-text strong { color: var(--tx); font-weight: 500; }
+
+  /* right — problem bullets */
+  #apex-problem-{{ section.id }} .ap-problems { display: flex; flex-direction: column; gap: 0; }
+  #apex-problem-{{ section.id }} .ap-prob-item {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 20px;
+    align-items: start;
+    transition: background .2s;
+    position: relative;
+  }
+  #apex-problem-{{ section.id }} .ap-prob-item:first-child { border-top: 1px solid var(--border); }
+  #apex-problem-{{ section.id }} .ap-prob-item::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg,var(--gold),transparent);
+    opacity: 0; transition: opacity .3s;
+  }
+  #apex-problem-{{ section.id }} .ap-prob-item:hover::before { opacity: 1; }
+  #apex-problem-{{ section.id }} .ap-prob-icon {
+    width: 44px; height: 44px;
+    background: var(--bg3); border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+    transition: border-color .3s, background .3s;
+  }
+  #apex-problem-{{ section.id }} .ap-prob-item:hover .ap-prob-icon {
+    border-color: var(--gold); background: var(--gd);
+  }
+  #apex-problem-{{ section.id }} .ap-prob-content {}
+  #apex-problem-{{ section.id }} .ap-prob-title {
+    font-family: var(--fd); font-size: 22px; letter-spacing: .04em;
+    color: var(--tx); line-height: 1; margin-bottom: 8px;
+  }
+  #apex-problem-{{ section.id }} .ap-prob-desc {
+    font-family: var(--fm); font-size: 11px; color: var(--tx2);
+    line-height: 1.8; letter-spacing: .03em;
+  }
+
+  /* bottom callout */
+  #apex-problem-{{ section.id }} .ap-callout {
+    margin-top: 64px;
+    border: 1px solid rgba(245,197,66,.25);
+    border-left: 3px solid var(--gold);
+    padding: 24px 28px;
+    background: var(--gd);
+    display: flex; align-items: center; gap: 20px;
+  }
+  #apex-problem-{{ section.id }} .ap-callout-em {
+    font-family: var(--fd); font-size: 36px; color: var(--gold); flex-shrink: 0; line-height: 1;
+  }
+  #apex-problem-{{ section.id }} .ap-callout-text {
+    font-family: var(--fs); font-size: 20px; font-style: italic;
+    font-weight: normal; line-height: 1.5; color: var(--tx);
+  }
+  #apex-problem-{{ section.id }} .ap-callout-text span { color: var(--gold); font-style: normal; }
+
+  @media(max-width:900px){
+    #apex-problem-{{ section.id }} .ap-layout { grid-template-columns: 1fr; gap: 48px; }
+    #apex-problem-{{ section.id }} .ap-inner { padding: 0 28px; }
+  }
+  @media(max-width:600px){
+    #apex-problem-{{ section.id }} .ap-inner { padding: 0 20px; }
+    #apex-problem-{{ section.id }} .ap-callout { flex-direction: column; gap: 12px; }
+  }
+</style>
+
+<section id="apex-problem-{{ section.id }}">
+  <div class="ap-grid" aria-hidden="true"></div>
+  <div class="ap-inner">
+
+    <div class="ap-rule">
+      <div class="ap-rule-line"></div>
+      <div class="ap-rule-tag">{{ section.settings.section_tag }}</div>
+      <div class="ap-rule-line"></div>
+    </div>
+
+    <div class="ap-layout">
+      <!-- LEFT -->
+      <div>
+        <h2 class="ap-headline">
+          {{ section.settings.headline | replace: section.settings.headline_accent, '<span class="ap-hl-accent">' | append: '</span>' }}
+        </h2>
+        <p class="ap-eyebrow-sub">{{ section.settings.subtext }}</p>
+
+        <div class="ap-left-stat">
+          {% for block in section.blocks %}
+            {% if block.type == 'left_stat' %}
+              <div class="ap-ls-item" {{ block.shopify_attributes }}>
+                <span class="ap-ls-num">{{ block.settings.stat_num }}</span>
+                <span class="ap-ls-text">{{ block.settings.stat_text }}</span>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="ap-problems">
+        {% for block in section.blocks %}
+          {% if block.type == 'problem' %}
+            <div class="ap-prob-item" {{ block.shopify_attributes }}>
+              <div class="ap-prob-icon">{{ block.settings.icon }}</div>
+              <div class="ap-prob-content">
+                <div class="ap-prob-title">{{ block.settings.title }}</div>
+                <div class="ap-prob-desc">{{ block.settings.description }}</div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Callout -->
+    <div class="ap-callout">
+      <div class="ap-callout-em">{{ section.settings.callout_icon }}</div>
+      <div class="ap-callout-text">{{ section.settings.callout_text | replace: section.settings.callout_accent, '<span>' | append: '</span>' }}</div>
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "APEX Problem",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#0b0b0f" },
+    { "type": "color", "id": "accent_color", "label": "Accent (Gold)", "default": "#f5c542" },
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "section_tag", "label": "Section Tag", "default": "The Problem" },
+    { "type": "textarea", "id": "headline", "label": "Headline", "default": "Most people stay stuck because they have no system." },
+    { "type": "text", "id": "headline_accent", "label": "Word(s) to highlight gold", "default": "no system." },
+    { "type": "textarea", "id": "subtext", "label": "Subtext paragraph", "default": "Without structure, every day is improvised. Without accountability, every goal is optional. Without a system, ambition is just a feeling — and feelings fade." },
+    { "type": "header", "content": "Bottom Callout" },
+    { "type": "text", "id": "callout_icon", "label": "Callout Icon / Number", "default": "⚡" },
+    { "type": "textarea", "id": "callout_text", "label": "Callout Quote", "default": "APEX is the system you never had. The one that makes discipline feel like progress." },
+    { "type": "text", "id": "callout_accent", "label": "Word(s) to highlight gold in callout", "default": "discipline feel like progress." },
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "min": 40, "max": 200, "step": 4, "unit": "px", "label": "Padding Top", "default": 100 },
+    { "type": "range", "id": "padding_bottom", "min": 40, "max": 200, "step": 4, "unit": "px", "label": "Padding Bottom", "default": 100 }
+  ],
+  "blocks": [
+    {
+      "type": "problem",
+      "name": "Problem Bullet",
+      "settings": [
+        { "type": "text", "id": "icon", "label": "Icon (emoji)", "default": "🔁" },
+        { "type": "text", "id": "title", "label": "Problem Title", "default": "No Consistency" },
+        { "type": "textarea", "id": "description", "label": "Problem Description", "default": "You start strong every Monday and collapse by Thursday. There's no forcing function keeping you locked in." }
+      ]
+    },
+    {
+      "type": "left_stat",
+      "name": "Left Stat Row",
+      "settings": [
+        { "type": "text", "id": "stat_num", "label": "Number", "default": "92%" },
+        { "type": "text", "id": "stat_text", "label": "Stat Description", "default": "of entrepreneurs report inconsistency as their biggest obstacle to growth." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APEX Problem",
+      "blocks": [
+        { "type": "left_stat", "settings": { "stat_num": "92%", "stat_text": "of entrepreneurs report inconsistency as their #1 obstacle to growth." } },
+        { "type": "left_stat", "settings": { "stat_num": "4.2H", "stat_text": "wasted daily on unstructured work with no clear mission or output." } },
+        { "type": "left_stat", "settings": { "stat_num": "0", "stat_text": "accountability systems built into most people's daily lives." } },
+        { "type": "problem", "settings": { "icon": "🔁", "title": "No Consistency", "description": "You start strong every Monday and collapse by Thursday. There's no forcing function keeping you locked in day after day." } },
+        { "type": "problem", "settings": { "icon": "🕳", "title": "No Structure", "description": "Your day is improvised. Reactive instead of intentional. Hours pass and nothing meaningful gets built." } },
+        { "type": "problem", "settings": { "icon": "📉", "title": "No Accountability", "description": "Without a system tracking your actions, every missed rep goes unnoticed. The gap between who you are and who you want to be quietly widens." } },
+        { "type": "problem", "settings": { "icon": "🧠", "title": "No Feedback Loop", "description": "You can't improve what you don't measure. Most people have no idea what their actual daily output looks like. APEX fixes that." } }
+      ]
+    }
+  ]
+}
+{% endschema %}
