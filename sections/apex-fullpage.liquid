@@ -1,0 +1,1209 @@
+{% comment %}
+  APEX — The Discipline Audit
+  Full page Liquid template
+  File: templates/page.apex.liquid  (or use as sections/apex-full-page.liquid)
+  
+  INSTALL OPTIONS:
+  ─────────────────────────────────────────────────────
+  Option A — Page Template (recommended for a standalone page):
+    1. Go to Edit Code → Templates → Add a new template
+    2. Choose "page", name it "apex"
+    3. Paste this file
+    4. In Shopify Admin → Pages → create a page, assign template "apex"
+  
+  Option B — Section (to drop into any page via customizer):
+    1. Go to Edit Code → Sections → Add a new section
+    2. Name it "apex-full-page"
+    3. Paste this file
+    4. Add it via theme customizer
+  ─────────────────────────────────────────────────────
+{% endcomment %}
+
+<!DOCTYPE html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="description" content="APEX — The Discipline Audit. Stop tracking habits. Start auditing your life."/>
+  <title>APEX — The Discipline Audit</title>
+
+  {%- if template == 'page.apex' -%}
+    {{ content_for_header }}
+  {%- endif -%}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+
+<style>
+/* ═══════════════════════════════════════════
+   APEX DESIGN TOKENS — ARCTIC BRUTALISM
+   All classes namespaced with .apex-page
+   to avoid conflicts with theme styles.
+═══════════════════════════════════════════ */
+.apex-page {
+  --w:    #f0f0eb;
+  --w2:   #e4e4de;
+  --k:    #0a0a08;
+  --k2:   #141410;
+  --k3:   #1e1e1a;
+  --k4:   #2a2a24;
+  --acid: #d4ff00;
+  --acid2:#bbec00;
+  --acid3:rgba(212,255,0,.12);
+  --acid4:rgba(212,255,0,.06);
+  --red:  #ff2d2d;
+  --dim:  rgba(240,240,235,.12);
+  --dim2: rgba(240,240,235,.06);
+  --dim3: rgba(240,240,235,.03);
+  --tx:   #f0f0eb;
+  --tx2:  #8a8a7e;
+  --tx3:  #3c3c34;
+  --fd:   'Bebas Neue', sans-serif;
+  --fm:   'IBM Plex Mono', monospace;
+  --fs:   'DM Serif Display', serif;
+}
+
+/* Reset scoped to APEX page */
+.apex-page *,
+.apex-page *::before,
+.apex-page *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+}
+
+.apex-page {
+  background: var(--k);
+  color: var(--tx);
+  font-family: var(--fm);
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  cursor: none;
+}
+
+.apex-page ::selection { background: var(--acid); color: var(--k); }
+.apex-page ::-webkit-scrollbar { width: 2px; }
+.apex-page ::-webkit-scrollbar-track { background: var(--k); }
+.apex-page ::-webkit-scrollbar-thumb { background: var(--acid); }
+.apex-page a, .apex-page button, .apex-page input,
+.apex-page select, .apex-page textarea { cursor: none; outline: none; }
+
+/* ── CURSOR — must be global (position:fixed breaks inside CSS-transformed parents) ── */
+* { box-sizing: border-box; }
+html, body { cursor: none !important; }
+#apex-cur {
+  position: fixed; width: 12px; height: 12px;
+  background: #d4ff00; border-radius: 50%;
+  pointer-events: none; z-index: 99999;
+  transform: translate(-50%,-50%);
+  transition: width .18s, height .18s, border-radius .18s;
+  mix-blend-mode: exclusion;
+}
+#apex-cur2 {
+  position: fixed; width: 36px; height: 36px;
+  border: 1px solid rgba(212,255,0,.38);
+  border-radius: 50%; pointer-events: none; z-index: 99998;
+  transform: translate(-50%,-50%);
+  transition: width .22s, height .22s, opacity .18s;
+}
+body.apex-hovering #apex-cur { width: 48px; height: 48px; border-radius: 4px; }
+body.apex-hovering #apex-cur2 { opacity: 0; }
+#apex-cv { position: fixed; inset: 0; pointer-events: none; z-index: 2; }
+
+/* (canvas handled globally above) */
+
+/* ── TOAST ─────────────────────────────────── */
+.apex-page #apex-toast {
+  position: fixed; bottom: 28px; right: 28px; z-index: 999;
+  font-family: var(--fm); font-size: 11px;
+  background: var(--k3); border: 1px solid var(--acid);
+  color: var(--w); border-radius: 0;
+  padding: 12px 18px; letter-spacing: .06em;
+  transform: translateY(80px); opacity: 0;
+  transition: all .38s cubic-bezier(.4,0,.2,1);
+  pointer-events: none; max-width: 320px; line-height: 1.6;
+}
+.apex-page #apex-toast.on { transform: translateY(0); opacity: 1; }
+
+/* ── NAV ───────────────────────────────────── */
+.apex-page #apex-nav {
+  position: fixed; top: 0; inset-x: 0; z-index: 200;
+  height: 60px; display: flex; align-items: center;
+  justify-content: space-between; padding: 0 48px;
+  border-bottom: 1px solid var(--dim);
+  background: rgba(10,10,8,.92);
+  backdrop-filter: blur(20px);
+  transition: border-color .3s;
+}
+.apex-page #apex-nav.s { border-color: var(--dim2); }
+.apex-page .n-logo {
+  display: flex; align-items: center; gap: 12px; text-decoration: none;
+}
+.apex-page .n-logo-a {
+  font-family: var(--fd); font-size: 28px; color: var(--acid);
+  letter-spacing: .02em; line-height: 1;
+}
+.apex-page .n-logo-slash { color: var(--tx3); font-size: 18px; font-weight: 300; }
+.apex-page .n-logo-tag {
+  font-family: var(--fm); font-size: 10px; color: var(--tx2);
+  letter-spacing: .15em; text-transform: uppercase;
+}
+.apex-page .n-links { display: flex; gap: 36px; align-items: center; }
+.apex-page .n-link {
+  font-family: var(--fm); font-size: 10px; letter-spacing: .18em;
+  color: var(--tx2); text-decoration: none; text-transform: uppercase;
+  transition: color .2s; padding-bottom: 2px; position: relative;
+}
+.apex-page .n-link::after {
+  content: ''; position: absolute; bottom: 0; left: 0;
+  width: 0; height: 1px; background: var(--acid); transition: width .28s;
+}
+.apex-page .n-link:hover { color: var(--acid); }
+.apex-page .n-link:hover::after { width: 100%; }
+.apex-page .n-cta {
+  font-family: var(--fd); font-size: 18px; letter-spacing: .06em;
+  padding: 8px 22px; background: var(--acid); color: var(--k);
+  border: none; border-radius: 0; transition: all .22s; line-height: 1;
+}
+.apex-page .n-cta:hover { background: var(--w); transform: translateY(-1px); }
+.apex-page .n-mob {
+  display: none; flex-direction: column; gap: 5px;
+  background: none; border: 1px solid var(--dim); padding: 9px;
+}
+.apex-page .n-mob span { width: 18px; height: 1px; background: var(--tx2); }
+.apex-page #apex-mobnav {
+  display: none; position: fixed; top: 60px; inset-x: 0;
+  background: var(--k2); border-bottom: 1px solid var(--dim);
+  z-index: 199; padding: 24px 28px;
+}
+.apex-page #apex-mobnav a {
+  padding: 12px 0; display: block; border-bottom: 1px solid var(--dim);
+  font-family: var(--fm); font-size: 11px; color: var(--tx2);
+  text-decoration: none; letter-spacing: .08em; transition: color .2s;
+}
+.apex-page #apex-mobnav a:hover { color: var(--acid); }
+.apex-page #apex-mobnav a:last-child { border-bottom: none; }
+
+/* ── HERO ──────────────────────────────────── */
+.apex-page #apex-hero {
+  min-height: 100vh; position: relative; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 0 48px 80px; z-index: 3;
+}
+.apex-page .hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(212,255,0,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212,255,0,.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+.apex-page .hero-number {
+  position: absolute; top: 50%; right: 48px; transform: translateY(-60%);
+  font-family: var(--fd); font-size: clamp(280px, 28vw, 480px);
+  color: transparent; -webkit-text-stroke: 1px rgba(212,255,0,.07);
+  line-height: 1; pointer-events: none; letter-spacing: -.02em; user-select: none;
+}
+.apex-page .hero-tag {
+  font-family: var(--fm); font-size: 10px; letter-spacing: .3em;
+  color: var(--acid); text-transform: uppercase; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 14px;
+  opacity: 0; animation: apex-fu .9s .1s both;
+}
+.apex-page .hero-tag::before { content: ''; width: 32px; height: 1px; background: var(--acid); }
+.apex-page .hero-h1 {
+  font-family: var(--fd);
+  font-size: clamp(72px, 12vw, 180px);
+  line-height: .9; letter-spacing: -.01em; margin-bottom: 32px;
+  opacity: 0; animation: apex-fu .9s .25s both;
+}
+.apex-page .hero-h1 .line-acid { color: var(--acid); display: block; }
+.apex-page .hero-h1 .line-dim { color: #a8a89e; display: block; font-size: .55em; letter-spacing: .04em; }
+.apex-page .hero-sub-row {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 40px; flex-wrap: wrap; opacity: 0; animation: apex-fu .9s .4s both;
+}
+.apex-page .hero-sub {
+  font-family: var(--fm); font-size: 13px; color: var(--tx2);
+  line-height: 1.9; max-width: 460px; letter-spacing: .025em;
+}
+.apex-page .hero-sub strong { color: var(--w); font-weight: 500; }
+.apex-page .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+.apex-page .btn-acid {
+  font-family: var(--fd); font-size: 22px; letter-spacing: .06em;
+  padding: 12px 32px; background: var(--acid); color: var(--k);
+  border: none; border-radius: 0; transition: all .25s; line-height: 1;
+  display: inline-block; text-decoration: none;
+}
+.apex-page .btn-acid:hover { background: var(--w); transform: translateY(-2px); }
+.apex-page .btn-outline {
+  font-family: var(--fd); font-size: 22px; letter-spacing: .06em;
+  padding: 12px 32px; background: none; color: var(--w);
+  border: 1px solid var(--dim); border-radius: 0; transition: all .25s; line-height: 1;
+}
+.apex-page .btn-outline:hover { border-color: var(--acid); color: var(--acid); }
+.apex-page .hero-ticker {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 40px; background: var(--acid); display: flex;
+  align-items: center; overflow: hidden;
+  opacity: 0; animation: apex-fu .9s .55s both;
+}
+.apex-page .ticker-track {
+  display: flex; white-space: nowrap;
+  animation: apex-ticker 24s linear infinite;
+}
+.apex-page .ticker-item {
+  font-family: var(--fd); font-size: 14px; letter-spacing: .12em;
+  color: var(--k); padding: 0 36px; flex-shrink: 0;
+  display: flex; align-items: center; gap: 14px;
+}
+.apex-page .ticker-item::after { content: '◆'; font-size: 6px; opacity: .5; }
+.apex-page .scroll-hint {
+  position: absolute; left: 48px; top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  font-family: var(--fm); font-size: 9px; letter-spacing: .25em;
+  color: var(--tx3); text-transform: uppercase;
+  display: flex; align-items: center; gap: 12px; transform-origin: center center;
+}
+.apex-page .scroll-hint::before { content: ''; width: 28px; height: 1px; background: var(--tx3); }
+
+/* ── SECTION BASE ──────────────────────────── */
+.apex-page .apex-section { position: relative; z-index: 3; }
+.apex-page .wrap { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+.apex-page .stag {
+  font-family: var(--fm); font-size: 10px; letter-spacing: .28em;
+  color: var(--tx3); text-transform: uppercase;
+  display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+}
+.apex-page .stag::before { content: ''; width: 20px; height: 1px; background: var(--tx3); }
+
+/* ── AUDIT INTRO ───────────────────────────── */
+.apex-page #apex-audit { padding: 120px 0 100px; }
+.apex-page .audit-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: start; }
+.apex-page .audit-h2 {
+  font-family: var(--fd); font-size: clamp(52px, 6vw, 90px);
+  line-height: .92; letter-spacing: -.01em;
+}
+.apex-page .audit-h2 .acc { color: var(--acid); }
+.apex-page .audit-right { padding-top: 16px; }
+.apex-page .audit-p {
+  font-family: var(--fm); font-size: 13px; color: var(--tx2);
+  line-height: 2; letter-spacing: .025em; margin-bottom: 28px;
+}
+.apex-page .audit-p strong { color: var(--w); font-weight: 500; }
+.apex-page .stat-row { display: flex; gap: 0; border: 1px solid var(--dim); }
+.apex-page .stat-box { flex: 1; padding: 22px 18px; border-right: 1px solid var(--dim); }
+.apex-page .stat-box:last-child { border-right: none; }
+.apex-page .stat-n { font-family: var(--fd); font-size: 38px; color: var(--acid); line-height: 1; margin-bottom: 4px; }
+.apex-page .stat-l { font-family: var(--fm); font-size: 9px; color: var(--tx3); letter-spacing: .16em; text-transform: uppercase; line-height: 1.5; }
+
+/* ── LEDGER ────────────────────────────────── */
+.apex-page #apex-ledger {
+  padding: 100px 0; background: var(--k2);
+  border-top: 1px solid var(--dim); border-bottom: 1px solid var(--dim);
+}
+.apex-page .ledger-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 60px; flex-wrap: wrap; gap: 24px;
+}
+.apex-page .ledger-h2 { font-family: var(--fd); font-size: clamp(48px, 6vw, 88px); line-height: .92; letter-spacing: -.01em; }
+.apex-page .ledger-h2 span { color: var(--acid); }
+.apex-page .ledger-desc { font-family: var(--fm); font-size: 12px; color: var(--tx2); max-width: 300px; line-height: 1.85; letter-spacing: .025em; }
+.apex-page .ledger-grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 1px; background: var(--dim); border: 1px solid var(--dim);
+}
+.apex-page .ledger-cell {
+  background: var(--k2); padding: 32px 28px;
+  transition: background .25s; position: relative; overflow: hidden;
+}
+.apex-page .ledger-cell:hover { background: var(--k3); }
+.apex-page .ledger-cell::before {
+  content: attr(data-num); position: absolute; bottom: -10px; right: 16px;
+  font-family: var(--fd); font-size: 80px; color: var(--acid);
+  opacity: .04; line-height: 1; pointer-events: none;
+}
+.apex-page .lc-tag {
+  font-family: var(--fm); font-size: 9px; letter-spacing: .2em; color: var(--tx3);
+  text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.apex-page .lc-tag::before { content: ''; width: 12px; height: 1px; background: var(--acid); }
+.apex-page .lc-title { font-family: var(--fd); font-size: 26px; color: var(--w); line-height: 1; margin-bottom: 12px; letter-spacing: .01em; }
+.apex-page .lc-desc { font-family: var(--fm); font-size: 11px; color: var(--tx2); line-height: 1.85; letter-spacing: .02em; }
+.apex-page .lc-acid { color: var(--acid); font-weight: 500; }
+
+/* ── LEVELS ────────────────────────────────── */
+.apex-page #apex-levels { padding: 100px 0; }
+.apex-page .levels-h2 { font-family: var(--fd); font-size: clamp(48px,6vw,88px); line-height: .92; margin-bottom: 56px; }
+.apex-page .levels-h2 span { color: var(--acid); }
+.apex-page .rank-ladder { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--dim); }
+.apex-page .rank-row {
+  display: grid; grid-template-columns: 80px 1fr auto;
+  align-items: center; border-bottom: 1px solid var(--dim);
+  padding: 18px 28px; transition: background .22s; gap: 28px;
+}
+.apex-page .rank-row:last-child { border-bottom: none; }
+.apex-page .rank-row:hover { background: var(--k3); }
+.apex-page .rank-row.current { background: var(--acid4); border-left: 3px solid var(--acid); }
+.apex-page .rank-num { font-family: var(--fd); font-size: 48px; color: var(--tx3); line-height: 1; }
+.apex-page .rank-row.current .rank-num { color: var(--acid); }
+.apex-page .rank-name { font-family: var(--fd); font-size: 32px; letter-spacing: .02em; line-height: 1; }
+.apex-page .rank-row.current .rank-name { color: var(--acid); }
+.apex-page .rank-desc { font-family: var(--fm); font-size: 10px; color: var(--tx2); line-height: 1.7; margin-top: 4px; letter-spacing: .02em; }
+.apex-page .rank-xp { font-family: var(--fm); font-size: 11px; color: var(--tx3); letter-spacing: .08em; text-align: right; white-space: nowrap; }
+.apex-page .rank-row.current .rank-xp { color: var(--acid); }
+.apex-page .rank-you { display: inline-block; font-family: var(--fm); font-size: 9px; background: var(--acid); color: var(--k); padding: 2px 8px; margin-top: 4px; letter-spacing: .1em; }
+
+/* ── PROOF ─────────────────────────────────── */
+.apex-page #apex-proof {
+  padding: 80px 0; background: var(--k2);
+  border-top: 1px solid var(--dim); border-bottom: 1px solid var(--dim);
+}
+.apex-page .proof-overflow {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1px; background: var(--dim); border: 1px solid var(--dim);
+}
+.apex-page .proof-cell {
+  background: var(--k2); padding: 40px 32px;
+  position: relative; overflow: hidden; transition: background .25s;
+  display: flex; flex-direction: column;
+}
+.apex-page .proof-cell:hover { background: var(--k3); }
+.apex-page .proof-cell-top { font-family: var(--fm); font-size: 9px; letter-spacing: .2em; color: var(--tx3); text-transform: uppercase; margin-bottom: 14px; }
+.apex-page .proof-q { font-family: var(--fs); font-size: 20px; font-style: italic; font-weight: normal; line-height: 1.6; color: var(--w); margin-bottom: 24px; flex: 1; }
+.apex-page .proof-q strong { font-style: normal; font-weight: 600; color: var(--acid); font-family: var(--fs); }
+.apex-page .proof-author { font-family: var(--fm); font-size: 10px; color: var(--tx3); letter-spacing: .08em; border-top: 1px solid var(--dim); padding-top: 16px; }
+.apex-page .proof-author strong { color: var(--w); font-weight: 500; display: block; margin-bottom: 3px; }
+
+/* ── PRICING ───────────────────────────────── */
+.apex-page #apex-pricing { padding: 100px 0; }
+.apex-page .pricing-top { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 52px; flex-wrap: wrap; gap: 24px; }
+.apex-page .pricing-h2 { font-family: var(--fd); font-size: clamp(48px,6vw,88px); line-height: .92; }
+.apex-page .pricing-h2 span { color: var(--acid); }
+.apex-page .billing-row { display: flex; align-items: center; gap: 12px; }
+.apex-page .bl-lbl { font-family: var(--fm); font-size: 11px; color: var(--tx2); letter-spacing: .08em; }
+.apex-page .bl-tog { width: 48px; height: 26px; background: var(--k3); border: 1px solid var(--dim); position: relative; transition: all .3s; cursor: none; }
+.apex-page .bl-tog.on { background: var(--acid); border-color: var(--acid); }
+.apex-page .bl-knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: var(--tx2); transition: transform .3s, background .3s; }
+.apex-page .bl-tog.on .bl-knob { transform: translateX(22px); background: var(--k); }
+.apex-page .bl-save { font-family: var(--fm); font-size: 9px; padding: 3px 10px; background: none; color: var(--acid); border: 1px solid rgba(212,255,0,.3); letter-spacing: .08em; }
+.apex-page .plans-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--dim); border: 1px solid var(--dim); }
+.apex-page .plan { background: var(--k2); padding: 36px 32px; position: relative; transition: background .25s; display: flex; flex-direction: column; }
+.apex-page .plan:hover { background: var(--k3); }
+.apex-page .plan.feat { background: var(--k3); border-top: 2px solid var(--acid); }
+.apex-page .plan-badge { display: inline-block; font-family: var(--fm); font-size: 9px; background: var(--acid); color: var(--k); padding: 3px 10px; margin-bottom: 18px; letter-spacing: .1em; text-transform: uppercase; align-self: flex-start; }
+.apex-page .plan-tier { font-family: var(--fm); font-size: 9px; letter-spacing: .25em; color: var(--tx3); text-transform: uppercase; margin-bottom: 10px; }
+.apex-page .plan-amt-row { display: flex; align-items: baseline; gap: 3px; margin-bottom: 4px; }
+.apex-page .plan-cur { font-family: var(--fm); font-size: 18px; color: var(--tx2); }
+.apex-page .plan-amt { font-family: var(--fd); font-size: 64px; color: var(--w); line-height: 1; }
+.apex-page .plan.feat .plan-amt { color: var(--acid); }
+.apex-page .plan-per { font-family: var(--fm); font-size: 10px; color: var(--tx3); margin-bottom: 24px; min-height: 14px; }
+.apex-page .plan-rule { height: 1px; background: var(--dim); margin-bottom: 22px; }
+.apex-page .plan-tagline { font-family: var(--fm); font-size: 11px; color: var(--tx2); line-height: 1.85; margin-bottom: 26px; letter-spacing: .02em; }
+.apex-page .plan-feats { list-style: none; margin-bottom: 36px; flex: 1; }
+.apex-page .pf { font-family: var(--fm); font-size: 10px; color: var(--tx2); padding: 7px 0; display: flex; gap: 10px; border-bottom: 1px solid var(--dim); letter-spacing: .02em; }
+.apex-page .pf:last-child { border-bottom: none; }
+.apex-page .pf-ic { flex-shrink: 0; line-height: 1.5; }
+.apex-page .pf.y .pf-ic { color: var(--acid); }
+.apex-page .pf.lk { color: var(--tx3); }
+.apex-page .pf.lk .pf-ic { opacity: .4; }
+.apex-page .plan-btn {
+  width: 100%; padding: 14px; font-family: var(--fd); font-size: 20px;
+  letter-spacing: .06em; border: 1px solid var(--dim); background: none;
+  color: var(--w); transition: all .25s; line-height: 1; cursor: none;
+}
+.apex-page .plan-btn:hover { border-color: var(--acid); color: var(--acid); }
+.apex-page .plan.feat .plan-btn { background: var(--acid); color: var(--k); border-color: var(--acid); }
+.apex-page .plan.feat .plan-btn:hover { background: var(--w); }
+.apex-page .pricing-foot { font-family: var(--fm); font-size: 10px; color: var(--tx3); text-align: center; margin-top: 28px; letter-spacing: .08em; line-height: 1.9; }
+.apex-page .pricing-foot a { color: var(--acid); text-decoration: none; }
+
+/* ── MANIFESTO ─────────────────────────────── */
+.apex-page #apex-manifesto {
+  padding: 120px 0; background: var(--k2);
+  border-top: 1px solid var(--dim); border-bottom: 1px solid var(--dim);
+}
+.apex-page .manifesto-inner { max-width: 880px; margin: 0 auto; padding: 0 48px; }
+.apex-page .manifesto-eyebrow { font-family: var(--fm); font-size: 10px; letter-spacing: .28em; color: var(--tx3); text-transform: uppercase; margin-bottom: 32px; }
+.apex-page .manifesto-q {
+  font-family: var(--fs); font-size: clamp(28px, 4vw, 48px);
+  font-style: italic; font-weight: normal; line-height: 1.3;
+  color: var(--w); margin-bottom: 48px; border-left: 2px solid var(--acid); padding-left: 28px;
+}
+.apex-page .manifesto-q span { color: var(--acid); font-style: normal; }
+.apex-page .manifesto-rules { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--dim); }
+.apex-page .mr { padding: 28px 24px; border-bottom: 1px solid var(--dim); border-right: 1px solid var(--dim); transition: background .22s; }
+.apex-page .mr:nth-child(even) { border-right: none; }
+.apex-page .mr:nth-last-child(-n+2) { border-bottom: none; }
+.apex-page .mr:hover { background: var(--k3); }
+.apex-page .mr-n { font-family: var(--fd); font-size: 60px; color: var(--acid); opacity: .15; line-height: 1; margin-bottom: 8px; }
+.apex-page .mr-text { font-family: var(--fs); font-size: 22px; font-style: italic; color: var(--w); line-height: 1.4; margin-bottom: 8px; }
+.apex-page .mr-sub { font-family: var(--fm); font-size: 11px; color: var(--tx2); line-height: 1.75; letter-spacing: .02em; }
+
+/* ── FAQ ───────────────────────────────────── */
+.apex-page #apex-faq { padding: 100px 0; }
+.apex-page .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--dim); max-width: 960px; }
+.apex-page .fi { border-bottom: 1px solid var(--dim); border-right: 1px solid var(--dim); }
+.apex-page .fi:nth-child(even) { border-right: none; }
+.apex-page .fi:nth-last-child(-n+2) { border-bottom: none; }
+.apex-page .fq { padding: 20px 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; font-family: var(--fd); font-size: 20px; background: none; border: none; color: var(--w); width: 100%; text-align: left; letter-spacing: .02em; line-height: 1.3; transition: color .2s; cursor: none; }
+.apex-page .fq:hover { color: var(--acid); }
+.apex-page .fq-ch { font-family: var(--fm); font-size: 18px; color: var(--tx3); transition: transform .3s, color .2s; flex-shrink: 0; margin-top: 2px; }
+.apex-page .fi.open .fq-ch { transform: rotate(180deg); color: var(--acid); }
+.apex-page .fa { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+.apex-page .fi.open .fa { max-height: 400px; }
+.apex-page .fa-in { padding: 0 24px 20px; font-family: var(--fm); font-size: 11px; color: var(--tx2); line-height: 1.88; letter-spacing: .025em; border-top: 1px solid var(--dim); padding-top: 14px; }
+
+/* ── FINAL CTA ─────────────────────────────── */
+.apex-page #apex-cta { padding: 120px 48px; text-align: center; position: relative; overflow: hidden; }
+.apex-page .cta-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(212,255,0,.04), transparent); pointer-events: none; }
+.apex-page .cta-h2 { font-family: var(--fd); font-size: clamp(52px, 9vw, 130px); line-height: .88; letter-spacing: -.02em; margin-bottom: 28px; position: relative; z-index: 1; }
+.apex-page .cta-h2 span { color: var(--acid); }
+.apex-page .cta-h2 .dim { color: var(--tx3); }
+.apex-page .cta-sub { font-family: var(--fm); font-size: 13px; color: var(--tx2); max-width: 520px; margin: 0 auto 44px; line-height: 2; letter-spacing: .03em; position: relative; z-index: 1; }
+.apex-page .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
+.apex-page .cta-note { font-family: var(--fm); font-size: 10px; color: var(--tx3); margin-top: 18px; letter-spacing: .1em; position: relative; z-index: 1; }
+
+/* ── FOOTER ────────────────────────────────── */
+.apex-page .apex-footer { background: var(--k2); border-top: 1px solid var(--dim); padding: 64px 48px 40px; }
+.apex-page .footer-inner { max-width: 1200px; margin: 0 auto; }
+.apex-page .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 52px; }
+.apex-page .f-brand-name { font-family: var(--fd); font-size: 32px; color: var(--acid); letter-spacing: .04em; margin-bottom: 12px; }
+.apex-page .f-brand-p { font-family: var(--fm); font-size: 11px; color: var(--tx3); line-height: 1.85; max-width: 240px; letter-spacing: .025em; }
+.apex-page .f-col-h { font-family: var(--fm); font-size: 9px; letter-spacing: .25em; color: var(--tx3); text-transform: uppercase; margin-bottom: 18px; }
+.apex-page .f-link { display: block; font-family: var(--fm); font-size: 11px; color: var(--tx2); text-decoration: none; margin-bottom: 10px; letter-spacing: .04em; transition: color .2s; }
+.apex-page .f-link:hover { color: var(--acid); }
+.apex-page .f-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 28px; border-top: 1px solid var(--dim); flex-wrap: wrap; gap: 12px; }
+.apex-page .f-copy { font-family: var(--fm); font-size: 10px; color: var(--tx3); letter-spacing: .08em; }
+.apex-page .f-legal { display: flex; gap: 20px; }
+
+/* ── PRICING MODAL ─────────────────────────── */
+.apex-page #apex-pm-bg {
+  position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 800;
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(12px); padding: 24px;
+}
+.apex-page #apex-pm-bg.on { display: flex; }
+.apex-page .pm-box { background: var(--k3); border: 1px solid var(--dim); padding: 36px; width: 100%; max-width: 480px; position: relative; }
+.apex-page .pm-box::before { content: ''; position: absolute; top: 0; inset-x: 0; height: 2px; background: var(--acid); }
+.apex-page .pm-close { position: absolute; top: 14px; right: 14px; background: none; border: 1px solid var(--dim); color: var(--tx2); width: 30px; height: 30px; font-size: 17px; display: flex; align-items: center; justify-content: center; transition: all .2s; cursor: none; }
+.apex-page .pm-close:hover { border-color: var(--red); color: var(--red); }
+.apex-page .pm-em { font-family: var(--fd); font-size: 52px; color: var(--acid); line-height: 1; margin-bottom: 10px; }
+.apex-page .pm-title { font-family: var(--fd); font-size: 36px; letter-spacing: .02em; margin-bottom: 8px; line-height: 1; }
+.apex-page .pm-sub { font-family: var(--fm); font-size: 11px; color: var(--tx2); line-height: 1.85; margin-bottom: 26px; letter-spacing: .025em; }
+.apex-page .pm-step { display: flex; align-items: flex-start; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--dim); }
+.apex-page .pm-step:last-child { border-bottom: none; }
+.apex-page .pm-sn { font-family: var(--fd); font-size: 24px; color: var(--acid); flex-shrink: 0; width: 28px; line-height: 1; }
+.apex-page .pm-st { font-family: var(--fm); font-size: 11px; color: var(--tx2); line-height: 1.7; letter-spacing: .025em; }
+.apex-page .pm-st strong { color: var(--w); font-weight: 500; }
+.apex-page .pm-btn { width: 100%; padding: 14px; font-family: var(--fd); font-size: 22px; letter-spacing: .06em; background: var(--acid); color: var(--k); border: none; transition: all .25s; margin-top: 22px; line-height: 1; cursor: none; }
+.apex-page .pm-btn:hover { background: var(--w); }
+.apex-page .pm-foot { font-family: var(--fm); font-size: 10px; color: var(--tx3); text-align: center; margin-top: 12px; letter-spacing: .08em; }
+
+/* ── ANIMATIONS ────────────────────────────── */
+@keyframes apex-fu {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes apex-ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.apex-page .ai  { opacity: 0; transform: translateY(26px); transition: opacity .68s ease, transform .68s ease; }
+.apex-page .ai2 { opacity: 0; transform: translateY(26px); transition: opacity .68s .12s ease, transform .68s .12s ease; }
+.apex-page .ai3 { opacity: 0; transform: translateY(26px); transition: opacity .68s .24s ease, transform .68s .24s ease; }
+.apex-page .ai.v, .apex-page .ai2.v, .apex-page .ai3.v { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ────────────────────────────── */
+@media(max-width:960px) {
+  .apex-page .audit-layout { grid-template-columns: 1fr; gap: 48px; }
+  .apex-page .pricing-top  { grid-template-columns: 1fr; gap: 24px; }
+  .apex-page .ledger-grid  { grid-template-columns: 1fr 1fr; }
+  .apex-page .plans-grid   { grid-template-columns: 1fr; }
+  .apex-page .proof-overflow { grid-template-columns: 1fr; }
+  .apex-page .manifesto-rules { grid-template-columns: 1fr; }
+  .apex-page .faq-grid     { grid-template-columns: 1fr; }
+  .apex-page .footer-top   { grid-template-columns: 1fr 1fr; }
+  .apex-page .hero-number  { display: none; }
+  .apex-page #apex-hero    { padding: 0 28px 80px; }
+  .apex-page .wrap         { padding: 0 28px; }
+  .apex-page #apex-nav     { padding: 0 28px; }
+  .apex-page .n-links      { display: none; }
+  .apex-page .n-mob        { display: flex; }
+}
+@media(max-width:640px) {
+  .apex-page #apex-nav     { padding: 0 20px; }
+  .apex-page .footer-top   { grid-template-columns: 1fr; }
+  .apex-page .ledger-grid  { grid-template-columns: 1fr; }
+  .apex-page .wrap         { padding: 0 20px; }
+  .apex-page #apex-cta     { padding: 80px 20px; }
+  .apex-page .apex-footer  { padding: 48px 20px 32px; }
+  .apex-page .manifesto-inner { padding: 0 20px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Cursor + canvas MUST be direct children of body — position:fixed breaks inside transformed/overflow parents -->
+<div id="apex-cur"></div>
+<div id="apex-cur2"></div>
+<canvas id="apex-cv"></canvas>
+<div id="apex-toast"></div>
+
+<div class="apex-page">
+
+  <!-- Pricing Modal -->
+  <div id="apex-pm-bg">
+    <div class="pm-box">
+      <button class="pm-close" onclick="apexClosePM()">×</button>
+      <div class="pm-em" id="apex-pm-em">01</div>
+      <div class="pm-title" id="apex-pm-title">ENLIST</div>
+      <div class="pm-sub" id="apex-pm-sub">You're about to open your first audit.</div>
+      <div id="apex-pm-steps">
+        <div class="pm-step"><div class="pm-sn">01</div><div class="pm-st"><strong>Create your account</strong> — email only. 30 seconds. No card yet.</div></div>
+        <div class="pm-step"><div class="pm-sn">02</div><div class="pm-st"><strong>Secure payment via Stripe</strong> — bank-grade encryption. Cancel any time from your dashboard.</div></div>
+        <div class="pm-step"><div class="pm-sn">03</div><div class="pm-st"><strong>Your audit begins immediately</strong> — all free-tier data carries over. Zero friction.</div></div>
+        <div class="pm-step"><div class="pm-sn">04</div><div class="pm-st"><strong>Join the cohort</strong> — private Discord invite arrives within minutes. Your accountability pair is waiting.</div></div>
+      </div>
+      <button class="pm-btn" id="apex-pm-btn" onclick="apexToast('Connect Stripe to activate checkout');apexClosePM()">OPEN YOUR AUDIT →</button>
+      <div class="pm-foot">30-day refund · No hidden fees · Cancel anytime</div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="apex-nav">
+    <a class="n-logo" href="{{ routes.root_url }}">
+      <span class="n-logo-a">APEX</span>
+      <span class="n-logo-slash">/</span>
+      <span class="n-logo-tag">The Discipline Audit</span>
+    </a>
+    <div class="n-links">
+      <a class="n-link" href="#apex-audit">The Audit</a>
+      <a class="n-link" href="#apex-ledger">The Ledger</a>
+      <a class="n-link" href="#apex-levels">Ranks</a>
+      <a class="n-link" href="#apex-pricing">Pricing</a>
+      <a class="n-link" href="{{ section.settings.app_url }}" style="color:var(--acid)">Open App</a>
+    </div>
+    <button class="n-cta" onclick="window.location.href='{{ section.settings.app_url }}'">OPEN AUDIT</button>
+    <button class="n-mob" onclick="apexToggleNav()"><span></span><span></span><span></span></button>
+  </nav>
+  <div id="apex-mobnav">
+    <a href="#apex-audit"   onclick="apexToggleNav()">The Audit</a>
+    <a href="#apex-ledger"  onclick="apexToggleNav()">The Ledger</a>
+    <a href="#apex-pricing" onclick="apexToggleNav()">Pricing</a>
+    <a href="{{ section.settings.app_url }}" style="color:var(--acid)">Open App →</a>
+  </div>
+
+  <!-- HERO -->
+  <section id="apex-hero" class="apex-section">
+    <div class="hero-grid"></div>
+    <div class="hero-number" aria-hidden="true">01</div>
+    <div class="scroll-hint" aria-hidden="true">scroll to audit</div>
+    <div class="hero-tag">{{ section.settings.hero_tag }}</div>
+    <h1 class="hero-h1">
+      {{ section.settings.hero_h1_line1 }}<br>
+      <span class="line-acid">{{ section.settings.hero_h1_line2 }}</span>
+      <span class="line-dim">{{ section.settings.hero_h1_line3 }}</span>
+    </h1>
+    <div class="hero-sub-row">
+      <p class="hero-sub">{{ section.settings.hero_sub }}</p>
+      <div class="hero-actions">
+        <a class="btn-acid" href="{{ section.settings.app_url }}">{{ section.settings.hero_btn_primary }}</a>
+        <button class="btn-outline" onclick="apexOpenPM('operator')">{{ section.settings.hero_btn_secondary }}</button>
+      </div>
+    </div>
+    <div class="hero-ticker">
+      <div class="ticker-track" aria-hidden="true">
+        <span class="ticker-item">Daily Audit</span><span class="ticker-item">Discipline Ledger</span><span class="ticker-item">Asset Tracking</span><span class="ticker-item">Debt Exposure</span><span class="ticker-item">XP Compounding</span><span class="ticker-item">Rank Progression</span><span class="ticker-item">Mission Briefings</span><span class="ticker-item">Accountability Pairs</span><span class="ticker-item">War Room</span><span class="ticker-item">Focus Sessions</span><span class="ticker-item">Daily P&amp;L</span><span class="ticker-item">Operator Network</span>
+        <span class="ticker-item">Daily Audit</span><span class="ticker-item">Discipline Ledger</span><span class="ticker-item">Asset Tracking</span><span class="ticker-item">Debt Exposure</span><span class="ticker-item">XP Compounding</span><span class="ticker-item">Rank Progression</span><span class="ticker-item">Mission Briefings</span><span class="ticker-item">Accountability Pairs</span><span class="ticker-item">War Room</span><span class="ticker-item">Focus Sessions</span><span class="ticker-item">Daily P&amp;L</span><span class="ticker-item">Operator Network</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUDIT INTRO -->
+  <section id="apex-audit" class="apex-section">
+    <div class="wrap" style="padding-top:100px;padding-bottom:100px">
+      <div class="stag">The Core Premise</div>
+      <div class="audit-layout">
+        <div>
+          <h2 class="audit-h2">
+            YOUR LIFE IS<br>
+            A <span class="acc">BUSINESS.</span><br>
+            MOST PEOPLE<br>
+            RUN IT AT A<br>
+            <span class="acc">LOSS.</span>
+          </h2>
+        </div>
+        <div class="audit-right">
+          <p class="audit-p">Every entrepreneur understands profit and loss. Revenue minus expenses. Simple. <strong>Why don't you apply this to your daily behavior?</strong></p>
+          <p class="audit-p">Your <strong>habits are assets</strong> — they compound over time, generate returns, and build equity. Your laziness, distraction, and avoidance are <strong>debt</strong> — it accumulates silently and charges interest in the form of lost potential.</p>
+          <p class="audit-p">APEX gives you a <strong>daily profit &amp; loss statement for your life.</strong> Complete your assets. Eliminate your liabilities. Close in the green, every single day.</p>
+          <div class="stat-row ai">
+            <div class="stat-box"><div class="stat-n">{{ section.settings.stat1_val }}</div><div class="stat-l">{{ section.settings.stat1_lbl }}</div></div>
+            <div class="stat-box"><div class="stat-n">{{ section.settings.stat2_val }}</div><div class="stat-l">{{ section.settings.stat2_lbl }}</div></div>
+            <div class="stat-box"><div class="stat-n">{{ section.settings.stat3_val }}</div><div class="stat-l">{{ section.settings.stat3_lbl }}</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE LEDGER -->
+  <section id="apex-ledger" class="apex-section">
+    <div class="wrap" style="padding-top:100px;padding-bottom:100px">
+      <div class="ledger-header">
+        <div>
+          <div class="stag">The System</div>
+          <h2 class="ledger-h2">THE<br><span>LEDGER</span></h2>
+        </div>
+        <p class="ledger-desc">Eight systems that turn your daily behavior into a measurable, gamified, unstoppable operation. This is not a to-do list. This is a war room.</p>
+      </div>
+      <div class="ledger-grid">
+        <div class="ledger-cell ai"  data-num="01"><div class="lc-tag">Core Engine</div><div class="lc-title">THE DAILY P&amp;L</div><div class="lc-desc">Every morning opens a new ledger. Each habit is an asset — tick it, it computes. Each miss is a liability. Your <span class="lc-acid">daily profit percentage</span> is visible at all times. Close green or justify why you didn't.</div></div>
+        <div class="ledger-cell ai2" data-num="02"><div class="lc-tag">Progression</div><div class="lc-title">XP COMPOUNDING</div><div class="lc-desc">Like a business — consistency compounds. 10 levels. Streak multipliers from <span class="lc-acid">1.25× at 3 days to 2× at 30</span>. Your XP is interest on discipline. Stop the streak and lose the rate.</div></div>
+        <div class="ledger-cell ai"  data-num="03"><div class="lc-tag">Focus</div><div class="lc-title">WAR ROOM TIMER</div><div class="lc-desc">25m Deep Focus, 52m Flow State, 90m Ultra Session, 5m Debrief. Each completed session earns <span class="lc-acid">50 XP</span> and is logged to your weekly output. Time is capital. Spend it deliberately.</div></div>
+        <div class="ledger-cell ai2" data-num="04"><div class="lc-tag">Analytics</div><div class="lc-title">28-DAY AUDIT TRAIL</div><div class="lc-desc">A 28-day heatmap shows your real pattern — not what you think you do, but what you <span class="lc-acid">actually do</span>. Weekly output chart. Per-habit sparklines. The evidence doesn't negotiate.</div></div>
+        <div class="ledger-cell ai"  data-num="05"><div class="lc-tag">Intelligence</div><div class="lc-title">DAILY BRIEFING</div><div class="lc-desc">A new mission brief every morning. Mood and energy check-in. Context for the day. <span class="lc-acid">The operator who knows the terrain before the battle wins it.</span></div></div>
+        <div class="ledger-cell ai2" data-num="06"><div class="lc-tag">Records</div><div class="lc-title">FIELD JOURNAL</div><div class="lc-desc">Per-habit notes. A private daily journal that earns <span class="lc-acid">XP</span>. Your observations over time become the most valuable dataset you own — a record of exactly how you won.</div></div>
+        <div class="ledger-cell ai"  data-num="07"><div class="lc-tag">Achievement</div><div class="lc-title">15 COMMENDATIONS</div><div class="lc-desc">Badges tied to real milestones — each worth <span class="lc-acid">100 bonus XP</span>. From First Contact on day one to God Mode at Level 10. You earn them. You can't buy them.</div></div>
+        <div class="ledger-cell ai2" data-num="08"><div class="lc-tag">Rankings</div><div class="lc-title">GLOBAL LEADERBOARD</div><div class="lc-desc">Your real XP ranked live against <span class="lc-acid">{{ section.settings.operator_count }}+ operators</span>. Rise through the chart. Your position is a direct reflection of your consistency — nothing else.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEVELS -->
+  <section id="apex-levels" class="apex-section">
+    <div class="wrap" style="padding-top:100px;padding-bottom:100px">
+      <div class="stag">Rank Progression</div>
+      <h2 class="levels-h2">10 RANKS.<br><span>EARN</span> THEM ALL.</h2>
+      <div class="rank-ladder">
+        <div class="rank-row"><div class="rank-num">01</div><div><div class="rank-name">INITIATE</div><div class="rank-desc">You've opened the audit. The ledger is blank. Everything starts here.</div></div><div class="rank-xp">0 XP</div></div>
+        <div class="rank-row"><div class="rank-num">02</div><div><div class="rank-name">OPERATOR</div><div class="rank-desc">You understand the system. You're building the habit of the habit.</div></div><div class="rank-xp">200 XP</div></div>
+        <div class="rank-row"><div class="rank-num">03</div><div><div class="rank-name">SPECIALIST</div><div class="rank-desc">Consistency is no longer impressive — it's expected. By you.</div></div><div class="rank-xp">500 XP</div></div>
+        <div class="rank-row"><div class="rank-num">04</div><div><div class="rank-name">VANGUARD</div><div class="rank-desc">Ahead of 90% of people. Not by talent. By showing up.</div></div><div class="rank-xp">1,000 XP</div></div>
+        <div class="rank-row"><div class="rank-num">05</div><div><div class="rank-name">ELITE</div><div class="rank-desc">Your daily output is genuinely exceptional. The ledger proves it.</div></div><div class="rank-xp">2,000 XP</div></div>
+        <div class="rank-row current"><div class="rank-num">06</div><div><div class="rank-name">APEX CLASS</div><div class="rank-desc">The inner circle. You operate at a level most people fantasize about.</div><div class="rank-you">← WHERE MOST OPERATORS TARGET</div></div><div class="rank-xp" style="text-align:right">3,500 XP<br><span style="font-size:9px;opacity:.6">benchmark</span></div></div>
+        <div class="rank-row"><div class="rank-num">07</div><div><div class="rank-name">LEGEND</div><div class="rank-desc">Exceptional consistency over a long period. Rare. The data confirms it.</div></div><div class="rank-xp">5,500 XP</div></div>
+        <div class="rank-row"><div class="rank-num">08</div><div><div class="rank-name">TRANSCENDENT</div><div class="rank-desc">You've built discipline as deep infrastructure, not surface behavior.</div></div><div class="rank-xp">8,000 XP</div></div>
+        <div class="rank-row"><div class="rank-num">09</div><div><div class="rank-name">MYTHIC</div><div class="rank-desc">Almost unreachable. The audit trail at this level is a document of transformation.</div></div><div class="rank-xp">12,000 XP</div></div>
+        <div class="rank-row" style="border-top:1px solid var(--acid)"><div class="rank-num" style="color:var(--acid);opacity:1">10</div><div><div class="rank-name" style="color:var(--acid)">GOD MODE</div><div class="rank-desc">The absolute ceiling. Achieved by fewer than 0.1% of operators. If you get here, you know what this represents.</div></div><div class="rank-xp" style="color:var(--acid)">20,000 XP</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROOF -->
+  <section id="apex-proof" class="apex-section">
+    <div class="wrap">
+      <div class="stag">Operators Speaking</div>
+      <div style="font-family:var(--fd);font-size:clamp(40px,5vw,72px);line-height:.92;letter-spacing:-.01em;margin-bottom:48px">RESULTS FROM<br>THE <span style="color:var(--acid)">FIELD.</span></div>
+      <div class="proof-overflow">
+        <div class="proof-cell ai">
+          <div class="proof-cell-top">// Operator Report — 134 days in</div>
+          <p class="proof-q">"I've tried every productivity system. Nothing made me confront my own BS like APEX did. The <strong>daily P&amp;L concept</strong> hit different. I was running my life at a chronic loss and I didn't even know it. 134 days, shipped 3 products, raised a pre-seed."</p>
+          <div class="proof-author"><strong>Marcus T.</strong>Founder · Level 8 · 134-day streak</div>
+        </div>
+        <div class="proof-cell ai2">
+          <div class="proof-cell-top">// Operator Report — 89 days in</div>
+          <p class="proof-q">"The focus timer and the field journal together are something I've never seen in any other tool. I finished my marathon training block and closed a $400K round in the same quarter. This is not an app. It is <strong>infrastructure.</strong>"</p>
+          <div class="proof-author"><strong>Priya K.</strong>Founder &amp; Athlete · Level 6 · 89-day streak</div>
+        </div>
+        <div class="proof-cell ai3">
+          <div class="proof-cell-top">// Operator Report — God Mode achieved</div>
+          <p class="proof-q">"Eight months. Level 10. <strong>God Mode.</strong> Not because of the badge. Because the audit trail I built over those eight months is the most honest document of my life I've ever seen. This thing changes who you think you are."</p>
+          <div class="proof-author"><strong>Jordan L.</strong>Engineer · Level 10 · God Mode</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="apex-pricing" class="apex-section">
+    <div class="wrap" style="padding-top:100px;padding-bottom:100px">
+      <div class="pricing-top">
+        <div>
+          <div class="stag">Investment</div>
+          <h2 class="pricing-h2">CHOOSE<br>YOUR <span>TIER.</span></h2>
+        </div>
+        <div class="billing-row">
+          <span class="bl-lbl">Monthly</span>
+          <div class="bl-tog" id="apex-bl-tog" onclick="apexToggleBilling()"><div class="bl-knob"></div></div>
+          <span class="bl-lbl">Annual</span>
+          <span class="bl-save">— Save 40%</span>
+        </div>
+      </div>
+      <div class="plans-grid">
+        <!-- Tier 01 Free -->
+        <div class="plan ai">
+          <div class="plan-tier">Tier 01</div>
+          <div class="plan-amt-row"><span class="plan-cur">$</span><span class="plan-amt">0</span></div>
+          <div class="plan-per">forever free</div>
+          <div class="plan-rule"></div>
+          <div class="plan-tagline">Open the audit. Prove you're serious before you invest a dollar. No card required.</div>
+          <ul class="plan-feats">
+            <li class="pf y"><span class="pf-ic">+</span>Up to 5 habit assets</li>
+            <li class="pf y"><span class="pf-ic">+</span>Daily task ledger</li>
+            <li class="pf y"><span class="pf-ic">+</span>Basic streak tracking</li>
+            <li class="pf y"><span class="pf-ic">+</span>Focus timer (25m only)</li>
+            <li class="pf y"><span class="pf-ic">+</span>7-day audit history</li>
+            <li class="pf lk"><span class="pf-ic">—</span>XP &amp; rank system</li>
+            <li class="pf lk"><span class="pf-ic">—</span>Commendations &amp; badges</li>
+            <li class="pf lk"><span class="pf-ic">—</span>28-day audit trail</li>
+            <li class="pf lk"><span class="pf-ic">—</span>Field journal</li>
+            <li class="pf lk"><span class="pf-ic">—</span>Operator network</li>
+          </ul>
+          <button class="plan-btn" onclick="window.location.href='{{ section.settings.app_url }}'">OPEN AUDIT FREE</button>
+        </div>
+        <!-- Tier 02 Operator -->
+        <div class="plan feat ai2">
+          <div class="plan-badge">Most Deployed</div>
+          <div class="plan-tier" style="color:var(--acid)">Tier 02</div>
+          <div class="plan-amt-row"><span class="plan-cur" style="color:var(--tx2)">$</span><span class="plan-amt" id="apex-op-amt">{{ section.settings.price_op_mo }}</span></div>
+          <div class="plan-per" id="apex-op-per">per month</div>
+          <div class="plan-rule"></div>
+          <div class="plan-tagline">The complete audit system. Everything you need to operate at your ceiling — every single day.</div>
+          <ul class="plan-feats">
+            <li class="pf y"><span class="pf-ic">+</span>Unlimited habit assets</li>
+            <li class="pf y"><span class="pf-ic">+</span>Full XP &amp; 10-rank system</li>
+            <li class="pf y"><span class="pf-ic">+</span>XP multipliers on streaks</li>
+            <li class="pf y"><span class="pf-ic">+</span>All 4 war room timer modes</li>
+            <li class="pf y"><span class="pf-ic">+</span>15 commendations &amp; badges</li>
+            <li class="pf y"><span class="pf-ic">+</span>28-day audit trail</li>
+            <li class="pf y"><span class="pf-ic">+</span>Field journal + habit notes</li>
+            <li class="pf y"><span class="pf-ic">+</span>Mood &amp; energy briefing</li>
+            <li class="pf y"><span class="pf-ic">+</span>Global leaderboard</li>
+            <li class="pf y"><span class="pf-ic">+</span>Operator Discord access</li>
+          </ul>
+          <button class="plan-btn" onclick="apexOpenPM('operator')">ENLIST AS OPERATOR →</button>
+        </div>
+        <!-- Tier 03 Apex Class -->
+        <div class="plan ai3">
+          <div class="plan-tier">Tier 03</div>
+          <div class="plan-amt-row"><span class="plan-cur">$</span><span class="plan-amt" id="apex-ap-amt">{{ section.settings.price_ap_mo }}</span></div>
+          <div class="plan-per" id="apex-ap-per">per month</div>
+          <div class="plan-rule"></div>
+          <div class="plan-tagline">The inner circle. For founders and operators who treat their life like a high-performance operation. Limited intake.</div>
+          <ul class="plan-feats">
+            <li class="pf y"><span class="pf-ic">+</span>Everything in Tier 02</li>
+            <li class="pf y"><span class="pf-ic">+</span>1-on-1 accountability pairing</li>
+            <li class="pf y"><span class="pf-ic">+</span>Private Apex Class Discord</li>
+            <li class="pf y"><span class="pf-ic">+</span>Weekly group debrief calls</li>
+            <li class="pf y"><span class="pf-ic">+</span>Custom audit programs</li>
+            <li class="pf y"><span class="pf-ic">+</span>Early access to all features</li>
+            <li class="pf y"><span class="pf-ic">+</span>APEX gear drops</li>
+            <li class="pf y"><span class="pf-ic">+</span>Lifetime rate lock option</li>
+            <li class="pf y"><span class="pf-ic">+</span>Direct founder access</li>
+            <li class="pf y"><span class="pf-ic">+</span>Name on global leaderboard</li>
+          </ul>
+          <button class="plan-btn" onclick="apexOpenPM('apex')">APPLY FOR APEX CLASS →</button>
+        </div>
+      </div>
+      <div class="pricing-foot">
+        🔒 <a href="#">30-day money-back guarantee</a> · No questions · Cancel anytime · Prices in USD<br>
+        Annual billing saves 40% — ${{ section.settings.price_op_yr }}yr for Operator, ${{ section.settings.price_ap_yr }}yr for Apex Class
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section id="apex-manifesto" class="apex-section">
+    <div class="manifesto-inner">
+      <div class="manifesto-eyebrow">// The APEX Operating Principles</div>
+      <blockquote class="manifesto-q">
+        "The operator who shows up every day,<br>regardless of how they feel,<br>
+        <span>beats the genius who shows up sometimes.</span><br>Every time."
+      </blockquote>
+      <div class="manifesto-rules">
+        <div class="mr ai"><div class="mr-n">01</div><div class="mr-text">"Consistency is the only strategy that doesn't run out."</div><div class="mr-sub">Every great performance is built from ordinary days executed perfectly. APEX tracks the ordinary days because that's where the work actually happens.</div></div>
+        <div class="mr ai2"><div class="mr-n">02</div><div class="mr-text">"What gets audited gets improved. Always."</div><div class="mr-sub">You can't manage what you don't measure. The discipline audit forces honesty — and honesty forces improvement. It's not optional. It's mechanical.</div></div>
+        <div class="mr ai"><div class="mr-n">03</div><div class="mr-text">"Your environment is your behavior in disguise."</div><div class="mr-sub">APEX is not a motivational tool. It's an environment — one that makes the right behavior the path of least resistance by making accountability unavoidable.</div></div>
+        <div class="mr ai2"><div class="mr-n">04</div><div class="mr-text">"Identity first. The habits are just evidence."</div><div class="mr-sub">You don't track habits in APEX. You build the identity of a person who doesn't need to be motivated. The audit trail is the proof of who you've become.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="apex-faq" class="apex-section">
+    <div class="wrap" style="padding-top:100px;padding-bottom:100px">
+      <div class="stag">Questions</div>
+      <div style="font-family:var(--fd);font-size:clamp(40px,5vw,72px);line-height:.92;letter-spacing:-.01em;margin-bottom:48px">COMMON<br><span style="color:var(--acid)">QUERIES.</span></div>
+      <div class="faq-grid">
+        <div class="fi"><button class="fq" onclick="apexTogFaq(this)">What exactly is a "discipline audit"?<span class="fq-ch">▾</span></button><div class="fa"><div class="fa-in">A discipline audit is our reframe of habit tracking. Instead of passively logging behavior, you treat your daily actions like a financial statement — habits are assets that generate returns, missed reps are liabilities that accumulate debt. The audit asks: are you profitable today?</div></div></div>
+        <div class="fi"><button class="fq" onclick="apexTogFaq(this)">Is APEX actually free to start?<span class="fq-ch">▾</span></button><div class="fa"><div class="fa-in">Yes — fully free. Tier 01 includes 5 habit assets, the task ledger, and the 25-minute war room timer. No credit card. No trial period. We want you to open your audit before you commit to it.</div></div></div>
+        <div class="fi"><button class="fq" onclick="apexTogFaq(this)">How do XP multipliers work exactly?<span class="fq-ch">▾</span></button><div class="fa"><div class="fa-in">Streaks activate compounding XP multipliers: 3-day streak = 1.25×, 7-day = 1.5×, 14-day = 1.75×, 30-day = 2×. This means a 30-day operator earns twice the XP per action as someone just starting. Consistency has a compounding return — like a business.</div></div></div>
+        <div class="fi"><button class="fq" onclick="apexTogFaq(this)">Does my data save between sessions?<span class="fq-ch">▾</span></button><div class="fa"><div class="fa-in">Yes. Everything — habits, XP, streaks, journal entries, task history — saves automatically to localStorage on the free tier. Tier 02 and 03 operators get cloud sync across devices so the audit never goes dark.</div></div></div>
+        <div class="fi"><button class="fq" onclick="apexTogFaq(this)">What is the Apex Class inner circle?<span class="fq-ch">▾</span></button><div class="fa"><div class="fa-in">A private, curated cohort of operators — founders, athletes, and high performers who have committed to auditing their lives at the highest level. Weekly debrief calls, 1-on-1 accountability pairings, custom audit programs, and direct founder access. Intake is limited to maintain quality.</div></div></div>
+        <div class="fi"><button class="fq" onclick="apexTogFaq(this)">Can I cancel anytime?<span class="fq-ch">▾</span></button><div class="fa"><div class="fa-in">Yes, always. Cancel from your dashboard in under 30 seconds. We also offer a full 30-day refund — no questions, no retention screens, no dark patterns. We're confident enough in the product that we don't need to trap you.</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section id="apex-cta" class="apex-section">
+    <div class="cta-bg"></div>
+    <h2 class="cta-h2"><span class="dim">ARE YOU</span><br>PROFITABLE<br><span>TODAY?</span></h2>
+    <p class="cta-sub">Open your first audit right now. It takes 30 seconds. No credit card. The gap between who you are and who you intend to be closes the moment you start tracking it honestly.</p>
+    <div class="cta-actions">
+      <a class="btn-acid" href="{{ section.settings.app_url }}">OPEN YOUR AUDIT FREE →</a>
+      <button class="btn-outline" onclick="apexOpenPM('operator')">See Operator Plan</button>
+    </div>
+    <div class="cta-note">No credit card · 30 seconds · Data saves automatically · 30-day guarantee on paid tiers</div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="apex-footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="f-brand-name">APEX</div>
+          <p class="f-brand-p">The Discipline Audit. Built for entrepreneurs and founders who treat their life like a business and refuse to operate at a loss.</p>
+        </div>
+        <div>
+          <div class="f-col-h">Product</div>
+          <a class="f-link" href="#apex-audit">The Audit</a>
+          <a class="f-link" href="#apex-ledger">The Ledger</a>
+          <a class="f-link" href="#apex-levels">Rank Progression</a>
+          <a class="f-link" href="#apex-pricing">Pricing</a>
+          <a class="f-link" href="{{ section.settings.app_url }}">Open App</a>
+        </div>
+        <div>
+          <div class="f-col-h">Cohort</div>
+          <a class="f-link" href="{{ section.settings.discord_url | default: '#' }}">Discord</a>
+          <a class="f-link" href="#">Weekly Debriefs</a>
+          <a class="f-link" href="{{ section.settings.app_url }}">Leaderboard</a>
+          <a class="f-link" href="#">Accountability</a>
+          <a class="f-link" href="{{ section.settings.twitter_url | default: '#' }}">@apexaudit</a>
+        </div>
+        <div>
+          <div class="f-col-h">Company</div>
+          <a class="f-link" href="{{ pages['about'].url | default: '#' }}">About</a>
+          <a class="f-link" href="mailto:{{ section.settings.support_email }}">Contact</a>
+          <a class="f-link" href="{{ pages['privacy-policy'].url | default: '#' }}">Privacy</a>
+          <a class="f-link" href="{{ pages['terms-of-service'].url | default: '#' }}">Terms</a>
+          <a class="f-link" href="{{ blogs['field-reports'].url | default: '#' }}">Field Reports</a>
+        </div>
+      </div>
+      <div class="f-bottom">
+        <div class="f-copy">© {{ 'now' | date: '%Y' }} APEX / The Discipline Audit · All rights reserved</div>
+        <div class="f-legal">
+          <a class="f-link" href="{{ pages['privacy-policy'].url | default: '#' }}">Privacy</a>
+          <a class="f-link" href="{{ pages['terms-of-service'].url | default: '#' }}">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+<script>
+/* cursor + canvas are already outside apex-page in the HTML above */
+(function(){
+'use strict';
+
+/* ── CURSOR ──────────────────────────────── */
+var cur  = document.getElementById('apex-cur');
+var cur2 = document.getElementById('apex-cur2');
+var mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',function(e){
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+  document.body.classList.add('apex-hovering');
+  clearTimeout(window._apexCH);
+  window._apexCH=setTimeout(function(){document.body.classList.remove('apex-hovering');},300);
+});
+(function tick(){
+  rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
+  cur2.style.left=Math.round(rx)+'px';
+  cur2.style.top=Math.round(ry)+'px';
+  requestAnimationFrame(tick);
+})();
+
+/* ── CANVAS PARTICLES ────────────────────── */
+var CV=document.getElementById('apex-cv');
+var CX=CV.getContext('2d');
+var P=[];
+function resCV(){CV.width=innerWidth;CV.height=innerHeight;}
+resCV();
+window.addEventListener('resize',resCV);
+function burst(x,y,col,n){
+  n=n||16;
+  for(var i=0;i<n;i++){
+    var a=(Math.PI*2/n)*i+Math.random()*.7;
+    var sp=2+Math.random()*5.5;
+    P.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2,life:1,col:col,sz:2+Math.random()*4.5,t:Math.random()>.6?'sq':'c'});
+  }
+}
+(function ap(){
+  CX.clearRect(0,0,CV.width,CV.height);
+  P=P.filter(function(p){return p.life>0;});
+  P.forEach(function(p){
+    p.x+=p.vx; p.y+=p.vy; p.vy+=.12; p.life-=.022; p.vx*=.984;
+    CX.globalAlpha=Math.max(0,p.life);
+    CX.fillStyle=p.col;
+    if(p.t==='sq'){CX.fillRect(p.x-p.sz/2,p.y-p.sz/2,p.sz,p.sz);}
+    else{CX.beginPath();CX.arc(p.x,p.y,p.sz,0,Math.PI*2);CX.fill();}
+  });
+  CX.globalAlpha=1;
+  requestAnimationFrame(ap);
+})();
+
+/* ── TOAST ───────────────────────────────── */
+var tQ=[],tB=false;
+window.apexToast=function(m){tQ.push(m);if(!tB)nT();};
+function nT(){
+  if(!tQ.length){tB=false;return;}
+  tB=true;
+  var el=document.getElementById('apex-toast');
+  el.textContent=tQ.shift(); el.classList.add('on');
+  setTimeout(function(){el.classList.remove('on');setTimeout(nT,400);},2800);
+}
+
+/* ── NAV ─────────────────────────────────── */
+window.addEventListener('scroll',function(){
+  document.getElementById('apex-nav').classList.toggle('s',window.scrollY>60);
+},{passive:true});
+window.apexToggleNav=function(){
+  var n=document.getElementById('apex-mobnav');
+  n.style.display=n.style.display==='block'?'none':'block';
+};
+
+/* ── INTERSECTION OBSERVER ───────────────── */
+if('IntersectionObserver' in window){
+  var IO=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting) e.target.classList.add('v');
+    });
+  },{threshold:.06,rootMargin:'0px 0px -30px 0px'});
+  document.querySelectorAll('.apex-page .ai,.apex-page .ai2,.apex-page .ai3').forEach(function(el){IO.observe(el);});
+}
+
+/* ── FAQ ─────────────────────────────────── */
+window.apexTogFaq=function(btn){
+  var it=btn.parentElement;
+  var o=it.classList.contains('open');
+  document.querySelectorAll('.apex-page .fi').forEach(function(x){x.classList.remove('open');});
+  if(!o) it.classList.add('open');
+};
+
+/* ── PRICING TOGGLE ──────────────────────── */
+var isAnn=false;
+var priceOpMo='{{ section.settings.price_op_mo }}';
+var priceOpAnn='{{ section.settings.price_op_ann }}';
+var priceOpYr='{{ section.settings.price_op_yr }}';
+var priceApMo='{{ section.settings.price_ap_mo }}';
+var priceApAnn='{{ section.settings.price_ap_ann }}';
+var priceApYr='{{ section.settings.price_ap_yr }}';
+window.apexToggleBilling=function(){
+  isAnn=!isAnn;
+  document.getElementById('apex-bl-tog').classList.toggle('on',isAnn);
+  document.getElementById('apex-op-amt').textContent=isAnn?priceOpAnn:priceOpMo;
+  document.getElementById('apex-op-per').textContent=isAnn?'per month · billed $'+priceOpYr+'/yr':'per month';
+  document.getElementById('apex-ap-amt').textContent=isAnn?priceApAnn:priceApMo;
+  document.getElementById('apex-ap-per').textContent=isAnn?'per month · billed $'+priceApYr+'/yr':'per month';
+};
+
+/* ── PRICING MODAL ───────────────────────── */
+var PM={
+  operator:{em:'02',title:'ENLIST AS OPERATOR',sub:'Unlock the complete audit system — XP engine, all ranks, analytics, field journal, leaderboard, and operator network.'},
+  apex:{em:'03',title:'JOIN APEX CLASS',sub:'The inner circle for serious operators. Limited intake. Apply to be considered for the next cohort.'}
+};
+window.apexOpenPM=function(t){
+  var c=PM[t]||PM.operator;
+  document.getElementById('apex-pm-em').textContent=c.em;
+  document.getElementById('apex-pm-title').textContent=c.title;
+  document.getElementById('apex-pm-sub').textContent=c.sub;
+  document.getElementById('apex-pm-bg').classList.add('on');
+};
+window.apexClosePM=function(){
+  document.getElementById('apex-pm-bg').classList.remove('on');
+};
+document.getElementById('apex-pm-bg').addEventListener('click',function(e){
+  if(e.target===document.getElementById('apex-pm-bg')) apexClosePM();
+});
+
+/* ── INIT BURST ──────────────────────────── */
+setTimeout(function(){
+  burst(innerWidth*.5,innerHeight*.5,'#d4ff00',14);
+  burst(innerWidth*.3,innerHeight*.4,'rgba(212,255,0,.6)',8);
+  burst(innerWidth*.7,innerHeight*.55,'rgba(212,255,0,.4)',8);
+},1000);
+
+})();
+</script>
+
+</div><!-- /.apex-page -->
+
+{%- if template == 'page.apex' -%}
+  {{ content_for_layout }}
+{%- endif -%}
+
+</body>
+</html>
+
+{% schema %}
+{
+  "name": "APEX Full Page",
+  "settings": [
+    {
+      "type": "header",
+      "content": "🔗 URLs"
+    },
+    {
+      "type": "url",
+      "id": "app_url",
+      "label": "App / Launch URL",
+      "info": "Where the 'Open App' and CTA buttons point"
+    },
+    {
+      "type": "url",
+      "id": "discord_url",
+      "label": "Discord Invite URL"
+    },
+    {
+      "type": "url",
+      "id": "twitter_url",
+      "label": "Twitter / X URL"
+    },
+    {
+      "type": "text",
+      "id": "support_email",
+      "label": "Support Email",
+      "default": "hello@apexaudit.com"
+    },
+    {
+      "type": "header",
+      "content": "🦸 Hero"
+    },
+    {
+      "type": "text",
+      "id": "hero_tag",
+      "label": "Eyebrow Tag",
+      "default": "The Discipline Audit"
+    },
+    {
+      "type": "text",
+      "id": "hero_h1_line1",
+      "label": "Headline Line 1",
+      "default": "STOP"
+    },
+    {
+      "type": "text",
+      "id": "hero_h1_line2",
+      "label": "Headline Line 2 (acid color)",
+      "default": "SURVIVING."
+    },
+    {
+      "type": "text",
+      "id": "hero_h1_line3",
+      "label": "Headline Line 3 (dim color)",
+      "default": "Start auditing."
+    },
+    {
+      "type": "textarea",
+      "id": "hero_sub",
+      "label": "Hero Subtext",
+      "default": "Most people are in the red. Their daily actions — what they actually do versus what they claim to want — don't match. APEX is the audit that exposes the gap and forces you to close it.\n\nEvery day is a financial statement. Are you profitable?"
+    },
+    {
+      "type": "text",
+      "id": "hero_btn_primary",
+      "label": "Primary Button Text",
+      "default": "OPEN YOUR AUDIT →"
+    },
+    {
+      "type": "text",
+      "id": "hero_btn_secondary",
+      "label": "Secondary Button Text",
+      "default": "See Plans"
+    },
+    {
+      "type": "header",
+      "content": "📊 Stats"
+    },
+    {
+      "type": "text",
+      "id": "stat1_val",
+      "label": "Stat 1 Value",
+      "default": "12K+"
+    },
+    {
+      "type": "text",
+      "id": "stat1_lbl",
+      "label": "Stat 1 Label",
+      "default": "Operators currently auditing"
+    },
+    {
+      "type": "text",
+      "id": "stat2_val",
+      "label": "Stat 2 Value",
+      "default": "4.2M"
+    },
+    {
+      "type": "text",
+      "id": "stat2_lbl",
+      "label": "Stat 2 Label",
+      "default": "Assets completed since launch"
+    },
+    {
+      "type": "text",
+      "id": "stat3_val",
+      "label": "Stat 3 Value",
+      "default": "98%"
+    },
+    {
+      "type": "text",
+      "id": "stat3_lbl",
+      "label": "Stat 3 Label",
+      "default": "Report improved output within 21d"
+    },
+    {
+      "type": "text",
+      "id": "operator_count",
+      "label": "Leaderboard Operator Count",
+      "default": "12,400"
+    },
+    {
+      "type": "header",
+      "content": "💰 Pricing"
+    },
+    {
+      "type": "text",
+      "id": "price_op_mo",
+      "label": "Operator Monthly Price",
+      "default": "12"
+    },
+    {
+      "type": "text",
+      "id": "price_op_ann",
+      "label": "Operator Annual Price (per month)",
+      "default": "7"
+    },
+    {
+      "type": "text",
+      "id": "price_op_yr",
+      "label": "Operator Annual Total",
+      "default": "84"
+    },
+    {
+      "type": "text",
+      "id": "price_ap_mo",
+      "label": "Apex Class Monthly Price",
+      "default": "29"
+    },
+    {
+      "type": "text",
+      "id": "price_ap_ann",
+      "label": "Apex Class Annual Price (per month)",
+      "default": "17"
+    },
+    {
+      "type": "text",
+      "id": "price_ap_yr",
+      "label": "Apex Class Annual Total",
+      "default": "204"
+    }
+  ],
+  "presets": [
+    {
+      "name": "APEX Full Page"
+    }
+  ]
+}
+{% endschema %}
