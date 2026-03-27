@@ -3,6 +3,20 @@
   Full page Liquid template
   File: templates/page.apex.liquid  (or use as sections/apex-full-page.liquid)
   
+  INSTALL OPTIONS:
+  ─────────────────────────────────────────────────────
+  Option A — Page Template (recommended for a standalone page):
+    1. Go to Edit Code → Templates → Add a new template
+    2. Choose "page", name it "apex"
+    3. Paste this file
+    4. In Shopify Admin → Pages → create a page, assign template "apex"
+  
+  Option B — Section (to drop into any page via customizer):
+    1. Go to Edit Code → Sections → Add a new section
+    2. Name it "apex-full-page"
+    3. Paste this file
+    4. Add it via theme customizer
+  ─────────────────────────────────────────────────────
 {% endcomment %}
 
 <!DOCTYPE html>
@@ -73,29 +87,28 @@
 .apex-page a, .apex-page button, .apex-page input,
 .apex-page select, .apex-page textarea { cursor: none; outline: none; }
 
-/* ── CURSOR — must be global (position:fixed breaks inside CSS-transformed parents) ── */
-* { box-sizing: border-box; }
-html, body { cursor: none !important; }
-#apex-cur {
+/* ── CURSOR ────────────────────────────────── */
+.apex-page #apex-cur {
   position: fixed; width: 12px; height: 12px;
-  background: #d4ff00; border-radius: 50%;
-  pointer-events: none; z-index: 99999;
+  background: var(--acid); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
   transform: translate(-50%,-50%);
   transition: width .18s, height .18s, border-radius .18s;
   mix-blend-mode: exclusion;
 }
-#apex-cur2 {
+.apex-page #apex-cur2 {
   position: fixed; width: 36px; height: 36px;
-  border: 1px solid rgba(212,255,0,.38);
-  border-radius: 50%; pointer-events: none; z-index: 99998;
+  border: 1px solid rgba(212,255,0,.35);
+  border-radius: 50%; pointer-events: none; z-index: 9998;
   transform: translate(-50%,-50%);
-  transition: width .22s, height .22s, opacity .18s;
 }
-body.apex-hovering #apex-cur { width: 48px; height: 48px; border-radius: 4px; }
-body.apex-hovering #apex-cur2 { opacity: 0; }
-#apex-cv { position: fixed; inset: 0; pointer-events: none; z-index: 2; }
+.apex-page.hovering #apex-cur { width: 48px; height: 48px; border-radius: 4px; }
+.apex-page.hovering #apex-cur2 { opacity: 0; }
 
-/* (canvas handled globally above) */
+/* ── CANVAS (particles) ────────────────────── */
+.apex-page #apex-cv {
+  position: fixed; inset: 0; pointer-events: none; z-index: 2;
+}
 
 /* ── TOAST ─────────────────────────────────── */
 .apex-page #apex-toast {
@@ -202,7 +215,7 @@ body.apex-hovering #apex-cur2 { opacity: 0; }
   opacity: 0; animation: apex-fu .9s .25s both;
 }
 .apex-page .hero-h1 .line-acid { color: var(--acid); display: block; }
-.apex-page .hero-h1 .line-dim { color: #a8a89e; display: block; font-size: .55em; letter-spacing: .04em; }
+.apex-page .hero-h1 .line-dim { color: var(--tx3); display: block; font-size: .55em; letter-spacing: .04em; }
 .apex-page .hero-sub-row {
   display: flex; align-items: flex-end; justify-content: space-between;
   gap: 40px; flex-wrap: wrap; opacity: 0; animation: apex-fu .9s .4s both;
@@ -528,14 +541,13 @@ body.apex-hovering #apex-cur2 { opacity: 0; }
 </head>
 
 <body>
-
-<!-- Cursor + canvas MUST be direct children of body — position:fixed breaks inside transformed/overflow parents -->
-<div id="apex-cur"></div>
-<div id="apex-cur2"></div>
-<canvas id="apex-cv"></canvas>
-<div id="apex-toast"></div>
-
 <div class="apex-page">
+
+  <!-- Cursor -->
+  <div id="apex-cur"></div>
+  <div id="apex-cur2"></div>
+  <canvas id="apex-cv"></canvas>
+  <div id="apex-toast"></div>
 
   <!-- Pricing Modal -->
   <div id="apex-pm-bg">
@@ -877,22 +889,23 @@ body.apex-hovering #apex-cur2 { opacity: 0; }
     </div>
   </footer>
 
-</body>
+</div><!-- /.apex-page -->
+
 <script>
-/* cursor + canvas are already outside apex-page in the HTML above */
 (function(){
 'use strict';
 
 /* ── CURSOR ──────────────────────────────── */
 var cur  = document.getElementById('apex-cur');
 var cur2 = document.getElementById('apex-cur2');
+var page = document.querySelector('.apex-page');
 var mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',function(e){
   mx=e.clientX; my=e.clientY;
   cur.style.left=mx+'px'; cur.style.top=my+'px';
-  document.body.classList.add('apex-hovering');
+  page.classList.add('hovering');
   clearTimeout(window._apexCH);
-  window._apexCH=setTimeout(function(){document.body.classList.remove('apex-hovering');},300);
+  window._apexCH=setTimeout(function(){page.classList.remove('hovering');},300);
 });
 (function tick(){
   rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
@@ -1014,14 +1027,9 @@ setTimeout(function(){
 })();
 </script>
 
-</div><!-- /.apex-page -->
-
 {%- if template == 'page.apex' -%}
   {{ content_for_layout }}
 {%- endif -%}
-
-</body>
-</html>
 
 {% schema %}
 {
