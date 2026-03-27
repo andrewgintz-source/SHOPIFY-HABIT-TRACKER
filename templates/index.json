@@ -69,9 +69,91 @@
         "padding_top": 120,
         "padding_bottom": 80
       }
+    },
+    "apex_problem_AF4ffM": {
+      "type": "apex-problem",
+      "blocks": {
+        "left_stat_fTH6p8": {
+          "type": "left_stat",
+          "settings": {
+            "stat_num": "92%",
+            "stat_text": "of entrepreneurs report inconsistency as their #1 obstacle to growth."
+          }
+        },
+        "left_stat_9H7ggp": {
+          "type": "left_stat",
+          "settings": {
+            "stat_num": "4.2H",
+            "stat_text": "wasted daily on unstructured work with no clear mission or output."
+          }
+        },
+        "left_stat_NdLTrr": {
+          "type": "left_stat",
+          "settings": {
+            "stat_num": "0",
+            "stat_text": "accountability systems built into most people's daily lives."
+          }
+        },
+        "problem_YHxmEX": {
+          "type": "problem",
+          "settings": {
+            "icon": "🔁",
+            "title": "No Consistency",
+            "description": "You start strong every Monday and collapse by Thursday. There's no forcing function keeping you locked in day after day."
+          }
+        },
+        "problem_ybdaUQ": {
+          "type": "problem",
+          "settings": {
+            "icon": "🕳",
+            "title": "No Structure",
+            "description": "Your day is improvised. Reactive instead of intentional. Hours pass and nothing meaningful gets built."
+          }
+        },
+        "problem_VDXxWg": {
+          "type": "problem",
+          "settings": {
+            "icon": "📉",
+            "title": "No Accountability",
+            "description": "Without a system tracking your actions, every missed rep goes unnoticed. The gap between who you are and who you want to be quietly widens."
+          }
+        },
+        "problem_FCncym": {
+          "type": "problem",
+          "settings": {
+            "icon": "🧠",
+            "title": "No Feedback Loop",
+            "description": "You can't improve what you don't measure. Most people have no idea what their actual daily output looks like. APEX fixes that."
+          }
+        }
+      },
+      "block_order": [
+        "left_stat_fTH6p8",
+        "left_stat_9H7ggp",
+        "left_stat_NdLTrr",
+        "problem_YHxmEX",
+        "problem_ybdaUQ",
+        "problem_VDXxWg",
+        "problem_FCncym"
+      ],
+      "name": "APEX Problem",
+      "settings": {
+        "bg_color": "#0b0b0f",
+        "accent_color": "#f5c542",
+        "section_tag": "The Problem",
+        "headline": "Most people stay stuck because they have no system.",
+        "headline_accent": "no system.",
+        "subtext": "Without structure, every day is improvised. Without accountability, every goal is optional. Without a system, ambition is just a feeling — and feelings fade.",
+        "callout_icon": "⚡",
+        "callout_text": "APEX is the system you never had. The one that makes discipline feel like progress.",
+        "callout_accent": "discipline feel like progress.",
+        "padding_top": 100,
+        "padding_bottom": 100
+      }
     }
   },
   "order": [
-    "apex_hero_XC4PbB"
+    "apex_hero_XC4PbB",
+    "apex_problem_AF4ffM"
   ]
 }
