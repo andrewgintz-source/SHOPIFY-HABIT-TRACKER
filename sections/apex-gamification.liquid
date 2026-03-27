@@ -1,0 +1,349 @@
+{% comment %}
+  APEX — Gamification Section
+  File: sections/apex-gamification.liquid
+{% endcomment %}
+
+<style>
+  #apex-game-{{ section.id }} *,
+  #apex-game-{{ section.id }} *::before,
+  #apex-game-{{ section.id }} *::after { box-sizing:border-box;margin:0;padding:0; }
+  #apex-game-{{ section.id }} {
+    --gold:{{ section.settings.accent_color }};
+    --gd:rgba(245,197,66,.14); --gd2:rgba(245,197,66,.07); --gd3:rgba(245,197,66,.04);
+    --bg:{{ section.settings.bg_color }};
+    --bg2:#0f0f15; --bg3:#14141c; --bg4:#1a1a26; --bg5:#1e1e2e;
+    --border:rgba(255,255,255,.07); --border2:rgba(255,255,255,.13);
+    --tx:#e8eaf4; --tx2:#7a8296; --tx3:#3c4256;
+    --fd:'Bebas Neue','Impact',sans-serif;
+    --fm:'JetBrains Mono','Fira Code','Courier New',monospace;
+    background:var(--bg); color:var(--tx); font-family:var(--fm);
+    position:relative; overflow:hidden;
+    padding:{{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+  /* background */
+  #apex-game-{{ section.id }} .ag-bg {
+    position:absolute; inset:0;
+    background-image:linear-gradient(rgba(245,197,66,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(245,197,66,.04) 1px,transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black,transparent);
+    pointer-events:none; z-index:0;
+  }
+  #apex-game-{{ section.id }} .ag-orb {
+    position:absolute; border-radius:50%; pointer-events:none; z-index:0;
+    width:600px; height:600px; top:50%; left:50%;
+    background:radial-gradient(circle,rgba(245,197,66,.045) 0%,transparent 62%);
+    transform:translate(-50%,-50%);
+    animation:ag-pulse 10s ease-in-out infinite alternate;
+  }
+  @keyframes ag-pulse { from{transform:translate(-50%,-50%) scale(1)} to{transform:translate(-50%,-50%) scale(1.15)} }
+
+  #apex-game-{{ section.id }} .ag-inner {
+    position:relative; z-index:1; max-width:1160px; margin:0 auto; padding:0 48px;
+  }
+
+  /* header */
+  #apex-game-{{ section.id }} .ag-header { text-align:center; margin-bottom:72px; }
+  #apex-game-{{ section.id }} .ag-tag {
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:var(--fm); font-size:10px; letter-spacing:.28em;
+    color:var(--gold); text-transform:uppercase; margin-bottom:20px;
+    padding:6px 18px; background:var(--gd); border:1px solid rgba(245,197,66,.22);
+  }
+  #apex-game-{{ section.id }} .ag-tag::before,
+  #apex-game-{{ section.id }} .ag-tag::after { content:''; width:14px; height:1px; background:var(--gold); opacity:.5; }
+  #apex-game-{{ section.id }} .ag-h2 {
+    font-family:var(--fd); font-size:clamp(44px,6vw,84px);
+    line-height:.9; letter-spacing:-.01em; margin-bottom:14px;
+  }
+  #apex-game-{{ section.id }} .ag-h2 span { color:var(--gold); }
+  #apex-game-{{ section.id }} .ag-h2-sub {
+    font-family:var(--fm); font-size:12px; color:var(--tx2);
+    line-height:1.85; max-width:520px; margin:0 auto; letter-spacing:.025em;
+  }
+
+  /* ── XP Meter (hero element) ── */
+  #apex-game-{{ section.id }} .ag-xp-meter {
+    background:var(--bg3); border:1px solid var(--border2);
+    padding:36px 40px; margin-bottom:48px; position:relative; overflow:hidden;
+  }
+  #apex-game-{{ section.id }} .ag-xp-meter::before {
+    content:''; position:absolute; top:0; inset-x:0; height:2px;
+    background:linear-gradient(90deg,transparent,var(--gold),var(--gold2, #ffd966),transparent);
+  }
+  #apex-game-{{ section.id }} .ag-xp-top {
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px;
+  }
+  #apex-game-{{ section.id }} .ag-xp-rank-name {
+    font-family:var(--fd); font-size:clamp(32px,5vw,56px);
+    color:var(--gold); letter-spacing:.04em; line-height:1;
+  }
+  #apex-game-{{ section.id }} .ag-xp-right { text-align:right; }
+  #apex-game-{{ section.id }} .ag-xp-label {
+    font-family:var(--fm); font-size:9px; color:var(--tx3); letter-spacing:.2em; text-transform:uppercase; margin-bottom:4px;
+  }
+  #apex-game-{{ section.id }} .ag-xp-numbers {
+    font-family:var(--fd); font-size:28px; color:var(--tx); letter-spacing:.04em; line-height:1;
+  }
+  #apex-game-{{ section.id }} .ag-xp-bar-outer {
+    height:10px; background:var(--bg5); border:1px solid var(--border); position:relative; overflow:hidden;
+  }
+  #apex-game-{{ section.id }} .ag-xp-bar-fill {
+    height:100%; width:{{ section.settings.xp_bar_pct }}%;
+    background:linear-gradient(90deg,var(--gold),#ffd966);
+    background-size:200% 100%;
+    animation:ag-shimmer 3s linear infinite;
+    position:relative;
+  }
+  #apex-game-{{ section.id }} .ag-xp-bar-fill::after {
+    content:''; position:absolute; right:0; top:50%; transform:translateY(-50%);
+    width:3px; height:200%; background:rgba(255,255,255,.4);
+    animation:ag-cursor 1.5s ease-in-out infinite alternate;
+  }
+  @keyframes ag-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  @keyframes ag-cursor { from{opacity:0} to{opacity:1} }
+  #apex-game-{{ section.id }} .ag-xp-milestones {
+    display:flex; justify-content:space-between; margin-top:8px;
+  }
+  #apex-game-{{ section.id }} .ag-xp-ms {
+    font-family:var(--fm); font-size:8px; color:var(--tx3); letter-spacing:.1em; text-transform:uppercase;
+  }
+  #apex-game-{{ section.id }} .ag-xp-ms.active { color:var(--gold); }
+
+  /* ── 4 mechanic cards ── */
+  #apex-game-{{ section.id }} .ag-cards {
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+    background:var(--border2); border:1px solid var(--border2); margin-bottom:48px;
+  }
+  #apex-game-{{ section.id }} .ag-card {
+    background:var(--bg3); padding:28px 22px; position:relative; overflow:hidden;
+    transition:background .25s;
+  }
+  #apex-game-{{ section.id }} .ag-card:hover { background:var(--bg4); }
+  #apex-game-{{ section.id }} .ag-card::before {
+    content:''; position:absolute; top:0; inset-x:0; height:2px;
+    background:linear-gradient(90deg,var(--gold),transparent);
+    opacity:0; transition:opacity .3s;
+  }
+  #apex-game-{{ section.id }} .ag-card:hover::before { opacity:1; }
+  #apex-game-{{ section.id }} .ag-card-icon {
+    font-size:28px; margin-bottom:14px; display:block; line-height:1;
+  }
+  #apex-game-{{ section.id }} .ag-card-title {
+    font-family:var(--fd); font-size:22px; letter-spacing:.04em;
+    color:var(--tx); line-height:1; margin-bottom:10px;
+  }
+  #apex-game-{{ section.id }} .ag-card-desc {
+    font-family:var(--fm); font-size:10px; color:var(--tx2);
+    line-height:1.85; letter-spacing:.03em; margin-bottom:14px;
+  }
+  /* mini xp pills */
+  #apex-game-{{ section.id }} .ag-card-pills { display:flex; flex-wrap:wrap; gap:5px; }
+  #apex-game-{{ section.id }} .ag-pill {
+    font-family:var(--fm); font-size:9px; padding:3px 9px;
+    background:var(--gd); border:1px solid rgba(245,197,66,.2);
+    color:var(--gold); letter-spacing:.07em; text-transform:uppercase;
+  }
+
+  /* ── Rank Ladder ── */
+  #apex-game-{{ section.id }} .ag-ranks-h {
+    font-family:var(--fd); font-size:clamp(28px,4vw,44px);
+    letter-spacing:.04em; margin-bottom:20px;
+  }
+  #apex-game-{{ section.id }} .ag-ranks-h span { color:var(--gold); }
+  #apex-game-{{ section.id }} .ag-ladder {
+    border:1px solid var(--border2); display:flex; flex-direction:column;
+  }
+  #apex-game-{{ section.id }} .ag-rank-row {
+    display:grid; grid-template-columns:56px 1fr auto;
+    align-items:center; gap:20px;
+    padding:14px 22px; border-bottom:1px solid var(--border);
+    transition:background .22s; position:relative;
+  }
+  #apex-game-{{ section.id }} .ag-rank-row:last-child { border-bottom:none; }
+  #apex-game-{{ section.id }} .ag-rank-row:hover { background:var(--gd2); }
+  #apex-game-{{ section.id }} .ag-rank-row.featured {
+    background:var(--gd); border-left:2px solid var(--gold);
+  }
+  #apex-game-{{ section.id }} .ag-rank-row.god { border-top:1px solid var(--gold); }
+  #apex-game-{{ section.id }} .ag-rn {
+    font-family:var(--fd); font-size:32px; color:var(--tx3); line-height:1;
+  }
+  #apex-game-{{ section.id }} .ag-rank-row.featured .ag-rn,
+  #apex-game-{{ section.id }} .ag-rank-row.god .ag-rn { color:var(--gold); }
+  #apex-game-{{ section.id }} .ag-rank-name {
+    font-family:var(--fd); font-size:22px; letter-spacing:.04em; color:var(--tx); line-height:1;
+  }
+  #apex-game-{{ section.id }} .ag-rank-row.featured .ag-rank-name,
+  #apex-game-{{ section.id }} .ag-rank-row.god .ag-rank-name { color:var(--gold); }
+  #apex-game-{{ section.id }} .ag-rank-desc {
+    font-family:var(--fm); font-size:10px; color:var(--tx2); line-height:1.5; margin-top:3px; letter-spacing:.03em;
+  }
+  #apex-game-{{ section.id }} .ag-rank-xp {
+    font-family:var(--fm); font-size:10px; color:var(--tx3); white-space:nowrap; text-align:right; letter-spacing:.08em;
+  }
+  #apex-game-{{ section.id }} .ag-rank-row.featured .ag-rank-xp,
+  #apex-game-{{ section.id }} .ag-rank-row.god .ag-rank-xp { color:var(--gold); }
+  #apex-game-{{ section.id }} .ag-rank-badge {
+    display:inline-block; font-family:var(--fm); font-size:8px;
+    background:var(--gold); color:#0b0b0f;
+    padding:2px 8px; margin-top:4px; letter-spacing:.1em; text-transform:uppercase;
+  }
+
+  @media(max-width:900px){
+    #apex-game-{{ section.id }} .ag-cards { grid-template-columns:1fr 1fr; }
+    #apex-game-{{ section.id }} .ag-inner { padding:0 28px; }
+  }
+  @media(max-width:600px){
+    #apex-game-{{ section.id }} .ag-cards { grid-template-columns:1fr; }
+    #apex-game-{{ section.id }} .ag-inner { padding:0 20px; }
+    #apex-game-{{ section.id }} .ag-xp-meter { padding:24px 20px; }
+    #apex-game-{{ section.id }} .ag-rank-row { grid-template-columns:44px 1fr; }
+    #apex-game-{{ section.id }} .ag-rank-xp { display:none; }
+  }
+</style>
+
+<section id="apex-game-{{ section.id }}">
+  <div class="ag-bg" aria-hidden="true"></div>
+  <div class="ag-orb" aria-hidden="true"></div>
+  <div class="ag-inner">
+
+    <div class="ag-header">
+      <div class="ag-tag">{{ section.settings.section_tag }}</div>
+      <h2 class="ag-h2">{{ section.settings.headline | replace: section.settings.headline_accent, '<span>' | append: '</span>' }}</h2>
+      <p class="ag-h2-sub">{{ section.settings.subtext }}</p>
+    </div>
+
+    <!-- XP Meter -->
+    <div class="ag-xp-meter">
+      <div class="ag-xp-top">
+        <div>
+          <div style="font-family:var(--fm);font-size:9px;color:var(--tx3);letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">Current Rank</div>
+          <div class="ag-xp-rank-name">{{ section.settings.demo_rank }}</div>
+        </div>
+        <div class="ag-xp-right">
+          <div class="ag-xp-label">Total XP Earned</div>
+          <div class="ag-xp-numbers">{{ section.settings.demo_xp }}</div>
+        </div>
+      </div>
+      <div class="ag-xp-bar-outer">
+        <div class="ag-xp-bar-fill"></div>
+      </div>
+      <div class="ag-xp-milestones">
+        <span class="ag-xp-ms active">Initiate</span>
+        <span class="ag-xp-ms">Operator</span>
+        <span class="ag-xp-ms">Specialist</span>
+        <span class="ag-xp-ms">Vanguard</span>
+        <span class="ag-xp-ms active">Elite</span>
+        <span class="ag-xp-ms">Apex Class</span>
+        <span class="ag-xp-ms">Legend</span>
+        <span class="ag-xp-ms">God Mode</span>
+      </div>
+    </div>
+
+    <!-- 4 mechanic cards -->
+    <div class="ag-cards">
+      {% for block in section.blocks %}
+        {% if block.type == 'mechanic' %}
+          <div class="ag-card" {{ block.shopify_attributes }}>
+            <span class="ag-card-icon">{{ block.settings.icon }}</span>
+            <div class="ag-card-title">{{ block.settings.title }}</div>
+            <p class="ag-card-desc">{{ block.settings.description }}</p>
+            <div class="ag-card-pills">
+              {% assign pills = block.settings.pills | split: '|' %}
+              {% for pill in pills %}
+                <span class="ag-pill">{{ pill | strip }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- Rank Ladder -->
+    <div class="ag-ranks-h">THE 10 <span>RANKS.</span></div>
+    <div class="ag-ladder">
+      {% for block in section.blocks %}
+        {% if block.type == 'rank' %}
+          <div class="ag-rank-row{% if block.settings.featured %} featured{% endif %}{% if block.settings.is_god %} god{% endif %}" {{ block.shopify_attributes }}>
+            <div class="ag-rn">{{ block.settings.rank_num }}</div>
+            <div>
+              <div class="ag-rank-name">{{ block.settings.rank_name }}</div>
+              <div class="ag-rank-desc">{{ block.settings.rank_desc }}</div>
+              {% if block.settings.featured %}<span class="ag-rank-badge">Target Rank</span>{% endif %}
+            </div>
+            <div class="ag-rank-xp">{{ block.settings.xp_req }}</div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "APEX Gamification",
+  "tag": "section",
+  "settings": [
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#0b0b0f" },
+    { "type": "color", "id": "accent_color", "label": "Accent (Gold)", "default": "#f5c542" },
+    { "type": "text", "id": "section_tag", "label": "Section Tag", "default": "The Game Layer" },
+    { "type": "textarea", "id": "headline", "label": "Headline", "default": "Your life. Gamified." },
+    { "type": "text", "id": "headline_accent", "label": "Words to highlight gold", "default": "Gamified." },
+    { "type": "textarea", "id": "subtext", "label": "Subtitle", "default": "APEX borrows the most powerful motivation mechanic ever invented — the game loop — and applies it to real life. XP. Streaks. Ranks. Skill trees. The discipline becomes addictive." },
+    { "type": "header", "content": "Demo XP Meter" },
+    { "type": "text", "id": "demo_rank", "label": "Demo Rank Name", "default": "APEX CLASS" },
+    { "type": "text", "id": "demo_xp", "label": "Demo XP Display", "default": "3,840 XP" },
+    { "type": "range", "id": "xp_bar_pct", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "XP Bar Fill %", "default": 72 },
+    { "type": "range", "id": "padding_top", "min": 40, "max": 200, "step": 4, "unit": "px", "label": "Padding Top", "default": 100 },
+    { "type": "range", "id": "padding_bottom", "min": 40, "max": 200, "step": 4, "unit": "px", "label": "Padding Bottom", "default": 100 }
+  ],
+  "blocks": [
+    {
+      "type": "mechanic",
+      "name": "Game Mechanic",
+      "settings": [
+        { "type": "text", "id": "icon", "label": "Icon", "default": "⚡" },
+        { "type": "text", "id": "title", "label": "Title", "default": "XP System" },
+        { "type": "textarea", "id": "description", "label": "Description", "default": "Every habit, task, and focus session earns XP. Streaks activate multipliers. Consistency compounds like compound interest." },
+        { "type": "textarea", "id": "pills", "label": "Pills (separate with |)", "default": "+25 XP habits | +50 XP sessions | 2× at 30d streak" }
+      ]
+    },
+    {
+      "type": "rank",
+      "name": "Rank Row",
+      "settings": [
+        { "type": "text", "id": "rank_num", "label": "Rank Number (e.g. 01)", "default": "01" },
+        { "type": "text", "id": "rank_name", "label": "Rank Name", "default": "INITIATE" },
+        { "type": "text", "id": "rank_desc", "label": "Rank Description", "default": "Audit opened. Ledger blank. Everything starts here." },
+        { "type": "text", "id": "xp_req", "label": "XP Required", "default": "0 XP" },
+        { "type": "checkbox", "id": "featured", "label": "Highlight row (gold)", "default": false },
+        { "type": "checkbox", "id": "is_god", "label": "God Mode row (gold border-top)", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APEX Gamification",
+      "blocks": [
+        { "type": "mechanic", "settings": { "icon": "⚡", "title": "XP System", "description": "Every habit, task, and focus session earns XP. Streaks activate multipliers up to 2×. Your score is a direct reflection of your consistency.", "pills": "+10–75 XP per habit | +50 XP focus sessions | 2× at 30-day streak" } },
+        { "type": "mechanic", "settings": { "icon": "🌳", "title": "Skill Trees", "description": "Unlock categories — Mind, Body, Craft, Spirit, Grind, Social. Each habit feeds a branch. Build a balanced operator or go deep on one domain.", "pills": "6 skill domains | Visual progress trees | Domain XP tracking" } },
+        { "type": "mechanic", "settings": { "icon": "🔥", "title": "Streak Engine", "description": "Build chains that activate compounding XP bonuses. Break the chain and lose the rate. The psychology is designed to make missing feel costly.", "pills": "1.25× at 3 days | 1.5× at 7 | 1.75× at 14 | 2× at 30" } },
+        { "type": "mechanic", "settings": { "icon": "🏆", "title": "Achievement Badges", "description": "15 commendations tied to real milestones — from First Contact on day one to God Mode at Level 10. Each earns 100 bonus XP. Earned, never bought.", "pills": "15 badges | +100 XP each | Permanent record" } },
+        { "type": "rank", "settings": { "rank_num": "01", "rank_name": "INITIATE", "rank_desc": "Audit opened. Ledger blank. Everything starts here.", "xp_req": "0 XP" } },
+        { "type": "rank", "settings": { "rank_num": "02", "rank_name": "OPERATOR", "rank_desc": "Learning the system. Building the habit of the habit.", "xp_req": "200 XP" } },
+        { "type": "rank", "settings": { "rank_num": "03", "rank_name": "SPECIALIST", "rank_desc": "Consistency is no longer impressive — it's expected. By you.", "xp_req": "500 XP" } },
+        { "type": "rank", "settings": { "rank_num": "04", "rank_name": "VANGUARD", "rank_desc": "Ahead of 90% of people. Not by talent. By showing up.", "xp_req": "1,000 XP" } },
+        { "type": "rank", "settings": { "rank_num": "05", "rank_name": "ELITE", "rank_desc": "Your daily output is genuinely exceptional. The ledger proves it.", "xp_req": "2,000 XP" } },
+        { "type": "rank", "settings": { "rank_num": "06", "rank_name": "APEX CLASS", "rank_desc": "The inner circle. You operate at a level most people only fantasize about.", "xp_req": "3,500 XP", "featured": true } },
+        { "type": "rank", "settings": { "rank_num": "07", "rank_name": "LEGEND", "rank_desc": "Exceptional consistency over a long period. Rare. The data confirms it.", "xp_req": "5,500 XP" } },
+        { "type": "rank", "settings": { "rank_num": "08", "rank_name": "TRANSCENDENT", "rank_desc": "Discipline built as deep infrastructure — not surface behavior.", "xp_req": "8,000 XP" } },
+        { "type": "rank", "settings": { "rank_num": "09", "rank_name": "MYTHIC", "rank_desc": "Almost unreachable. The audit trail here is a document of transformation.", "xp_req": "12,000 XP" } },
+        { "type": "rank", "settings": { "rank_num": "10", "rank_name": "GOD MODE", "rank_desc": "The absolute ceiling. Fewer than 0.1% of operators reach this. If you get here, you know what it cost.", "xp_req": "20,000 XP", "is_god": true } }
+      ]
+    }
+  ]
+}
+{% endschema %}
