@@ -850,8 +850,8 @@
         "statement": "Build Your Future One Day at a Time.",
         "statement_em": "",
         "particle_count": 40,
-        "pad_top": 0,
-        "pad_bot": 0
+        "pad_top": 32,
+        "pad_bot": 32
       }
     }
   },
