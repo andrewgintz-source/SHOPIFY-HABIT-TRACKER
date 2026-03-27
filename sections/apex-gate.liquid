@@ -1,0 +1,794 @@
+{% comment %}
+  APEX — Waitlist Gate Section
+  File: sections/apex-gate.liquid
+  Compatible with: Dawn theme + any Shopify 2.0 theme
+{% endcomment %}
+
+<style>
+/* ── Reset ─────────────────────────────────────────── */
+#apex-gate-{{ section.id }}*,
+#apex-gate-{{ section.id }}*::before,
+#apex-gate-{{ section.id }}*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── Tokens ────────────────────────────────────────── */
+#apex-gate-{{ section.id }}{
+  --gold:     {{ section.settings.accent_color }};
+  --gold2:    #ffd966;
+  --golddim:  rgba(245,197,66,.13);
+  --golddim2: rgba(245,197,66,.06);
+  --goldglow: rgba(245,197,66,.28);
+  --bg:       {{ section.settings.bg_color }};
+  --bg2:      #0e0e12;
+  --bg3:      #14141a;
+  --border:   rgba(255,255,255,.07);
+  --border2:  rgba(255,255,255,.13);
+  --tx:       #e8eaf4;
+  --tx2:      #7a8296;
+  --tx3:      #3c4256;
+  --fd:       'Bebas Neue','Impact','Arial Narrow',sans-serif;
+  --fm:       'JetBrains Mono','Fira Code','Courier New',monospace;
+  --fs:       'Georgia','Times New Roman',serif;
+}
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+/* ── Section wrapper ───────────────────────────────── */
+#apex-gate-{{ section.id }}{
+  position:relative;
+  background:var(--bg);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  isolation:isolate;
+  padding:120px 24px 100px;
+  font-family:var(--fm);
+  color:var(--tx);
+}
+
+/* ── Layer 1 — animated grid ───────────────────────── */
+#apex-gate-{{ section.id }} .ag-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(245,197,66,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(245,197,66,.045) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 0%,transparent 100%);
+  pointer-events:none;z-index:0;
+  animation:ag-grid-drift 20s ease-in-out infinite alternate;
+}
+@keyframes ag-grid-drift{
+  from{background-position:0 0}
+  to  {background-position:12px 12px}
+}
+
+/* ── Layer 2 — slow radial glow ────────────────────── */
+#apex-gate-{{ section.id }} .ag-glow{
+  position:absolute;
+  width:900px;height:900px;
+  top:50%;left:50%;
+  transform:translate(-50%,-52%);
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(245,197,66,.055) 0%,transparent 65%);
+  pointer-events:none;z-index:0;
+  animation:ag-glow-pulse 10s ease-in-out infinite alternate;
+}
+@keyframes ag-glow-pulse{
+  from{transform:translate(-50%,-52%) scale(1)}
+  to  {transform:translate(-50%,-52%) scale(1.22)}
+}
+
+/* ── Layer 3 — floating orbs ───────────────────────── */
+#apex-gate-{{ section.id }} .ag-orb{
+  position:absolute;border-radius:50%;
+  pointer-events:none;z-index:0;filter:blur(48px);
+}
+#apex-gate-{{ section.id }} .ag-orb-a{
+  width:320px;height:320px;top:12%;left:8%;
+  background:radial-gradient(circle,rgba(245,197,66,.04),transparent 70%);
+  animation:ag-float 14s ease-in-out infinite alternate;
+}
+#apex-gate-{{ section.id }} .ag-orb-b{
+  width:280px;height:280px;bottom:14%;right:8%;
+  background:radial-gradient(circle,rgba(245,197,66,.03),transparent 70%);
+  animation:ag-float 11s ease-in-out infinite alternate-reverse;
+  animation-delay:-5s;
+}
+@keyframes ag-float{
+  from{transform:translate(0,0) scale(1)}
+  to  {transform:translate(18px,-22px) scale(1.12)}
+}
+
+/* ── Layer 4 — scanline noise overlay ─────────────── */
+#apex-gate-{{ section.id }} .ag-noise{
+  position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1;opacity:.5;
+}
+
+/* ── Layer 5 — tiny particles canvas ──────────────── */
+#apex-gate-{{ section.id }} .ag-canvas{
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+}
+
+/* ── Gold top rule ─────────────────────────────────── */
+#apex-gate-{{ section.id }} .ag-top-rule{
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent 0%,var(--gold) 50%,transparent 100%);
+  opacity:.5;z-index:2;
+}
+
+/* ── Content container ─────────────────────────────── */
+#apex-gate-{{ section.id }} .ag-content{
+  position:relative;z-index:3;
+  max-width:620px;width:100%;
+  text-align:center;
+  display:flex;flex-direction:column;align-items:center;
+}
+
+/* ── Eyebrow ───────────────────────────────────────── */
+#apex-gate-{{ section.id }} .ag-eyebrow{
+  display:inline-flex;align-items:center;gap:12px;
+  font-family:var(--fm);font-size:10px;letter-spacing:.32em;
+  color:var(--gold);text-transform:uppercase;margin-bottom:28px;
+  padding:7px 20px;
+  background:var(--golddim);
+  border:1px solid rgba(245,197,66,.24);
+  opacity:0;
+  animation:ag-fadeup .9s .1s both;
+}
+#apex-gate-{{ section.id }} .ag-eyebrow::before,
+#apex-gate-{{ section.id }} .ag-eyebrow::after{
+  content:'';width:16px;height:1px;background:var(--gold);opacity:.6;
+}
+#apex-gate-{{ section.id }} .ag-eyebrow-dot{
+  position:absolute;
+  width:5px;height:5px;background:var(--gold);border-radius:50%;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  animation:ag-blink 2s ease-in-out infinite;
+  /* hidden — used via JS if needed */
+  display:none;
+}
+@keyframes ag-blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* ── Headline ──────────────────────────────────────── */
+#apex-gate-{{ section.id }} .ag-h1{
+  font-family:var(--fd);
+  font-size:clamp(54px,10vw,118px);
+  line-height:.88;letter-spacing:-.02em;
+  margin-bottom:16px;
+  opacity:0;animation:ag-fadeup .9s .24s both;
+}
+#apex-gate-{{ section.id }} .ag-h1-line1{
+  display:block;color:var(--tx);
+}
+#apex-gate-{{ section.id }} .ag-h1-line2{
+  display:block;color:var(--gold);
+  position:relative;
+}
+/* shimmer sweep on line 2 */
+#apex-gate-{{ section.id }} .ag-h1-line2::after{
+  content:'';
+  position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);
+  animation:ag-sweep 4s ease-in-out 1.5s infinite;
+}
+@keyframes ag-sweep{
+  0%  {left:-100%}
+  40% {left:120%}
+  100%{left:120%}
+}
+
+/* ── Subheadline ───────────────────────────────────── */
+#apex-gate-{{ section.id }} .ag-sub{
+  font-family:var(--fm);font-size:clamp(12px,1.6vw,14px);
+  color:var(--tx2);line-height:1.9;letter-spacing:.025em;
+  max-width:480px;margin:0 auto 44px;
+  opacity:0;animation:ag-fadeup .9s .38s both;
+}
+#apex-gate-{{ section.id }} .ag-sub strong{color:var(--tx);font-weight:500;}
+
+/* ── Form ──────────────────────────────────────────── */
+#apex-gate-{{ section.id }} .ag-form{
+  width:100%;max-width:480px;
+  display:flex;gap:0;
+  border:1px solid var(--border2);
+  background:rgba(14,14,18,.7);
+  backdrop-filter:blur(12px);
+  opacity:0;animation:ag-fadeup .9s .52s both;
+  position:relative;overflow:hidden;
+}
+#apex-gate-{{ section.id }} .ag-form::before{
+  content:'';
+  position:absolute;top:0;inset-x:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.4;
+}
+#apex-gate-{{ section.id }} .ag-input{
+  flex:1;padding:16px 20px;
+  background:none;border:none;
+  color:var(--tx);font-family:var(--fm);font-size:12px;
+  letter-spacing:.06em;outline:none;
+}
+#apex-gate-{{ section.id }} .ag-input::placeholder{color:var(--tx3);letter-spacing:.08em;}
+#apex-gate-{{ section.id }} .ag-input:-webkit-autofill{
+  -webkit-box-shadow:0 0 0 100px var(--bg3) inset;
+  -webkit-text-fill-color:var(--tx);
+}
+#apex-gate-{{ section.id }} .ag-submit{
+  padding:16px 28px;
+  background:var(--gold);color:#0b0b0f;
+  font-family:var(--fd);font-size:18px;letter-spacing:.07em;line-height:1;
+  border:none;cursor:pointer;flex-shrink:0;
+  position:relative;overflow:hidden;
+  transition:background .25s,box-shadow .25s,transform .2s;
+}
+#apex-gate-{{ section.id }} .ag-submit::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.16),transparent);
+  pointer-events:none;
+}
+#apex-gate-{{ section.id }} .ag-submit:hover{
+  background:var(--gold2);
+  box-shadow:0 0 32px var(--goldglow);
+  transform:translateX(2px);
+}
+#apex-gate-{{ section.id }} .ag-submit:active{transform:translateX(0) scale(.98);}
+
+/* ── Success message ───────────────────────────────── */
+#apex-gate-{{ section.id }} .ag-success{
+  display:none;
+  font-family:var(--fm);font-size:11px;letter-spacing:.14em;
+  color:var(--gold);text-transform:uppercase;
+  padding:16px 28px;
+  border:1px solid rgba(245,197,66,.28);
+  background:var(--golddim);
+  animation:ag-fadeup .5s both;
+}
+#apex-gate-{{ section.id }} .ag-success.show{display:block;}
+
+/* ── Waitlist counter block ────────────────────────── */
+#apex-gate-{{ section.id }} .ag-counter-wrap{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  margin-top:32px;
+  opacity:0;animation:ag-fadeup .9s .66s both;
+}
+#apex-gate-{{ section.id }} .ag-count-row{
+  display:flex;align-items:center;gap:12px;
+}
+#apex-gate-{{ section.id }} .ag-count-dots{
+  display:flex;gap:4px;
+}
+#apex-gate-{{ section.id }} .ag-count-dot{
+  width:5px;height:5px;border-radius:50%;background:var(--gold);
+  animation:ag-blink 1.8s ease-in-out infinite;
+}
+#apex-gate-{{ section.id }} .ag-count-dot:nth-child(2){animation-delay:.3s;}
+#apex-gate-{{ section.id }} .ag-count-dot:nth-child(3){animation-delay:.6s;}
+
+#apex-gate-{{ section.id }} .ag-count-num{
+  font-family:var(--fd);font-size:clamp(32px,5vw,48px);
+  color:var(--gold);letter-spacing:-.01em;line-height:1;
+  /* will be animated by JS */
+}
+#apex-gate-{{ section.id }} .ag-count-label{
+  font-family:var(--fm);font-size:12px;letter-spacing:.08em;
+  color:var(--tx2);
+}
+
+/* ── Progress bar ──────────────────────────────────── */
+#apex-gate-{{ section.id }} .ag-progress-wrap{
+  width:100%;max-width:380px;
+}
+#apex-gate-{{ section.id }} .ag-progress-labels{
+  display:flex;justify-content:space-between;
+  font-family:var(--fm);font-size:9px;color:var(--tx3);
+  letter-spacing:.1em;margin-bottom:6px;
+}
+#apex-gate-{{ section.id }} .ag-progress-labels span:last-child{color:var(--gold);}
+#apex-gate-{{ section.id }} .ag-progress-outer{
+  height:3px;background:var(--border2);
+  position:relative;overflow:hidden;
+}
+#apex-gate-{{ section.id }} .ag-progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--gold),var(--gold2));
+  background-size:200% 100%;
+  animation:ag-prog-shimmer 3s linear infinite;
+  width:0%;/* set by JS */
+  transition:width 1.8s cubic-bezier(.4,0,.2,1);
+}
+@keyframes ag-prog-shimmer{
+  0%  {background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+
+/* ── Scarcity line ─────────────────────────────────── */
+#apex-gate-{{ section.id }} .ag-scarcity{
+  font-family:var(--fm);font-size:10px;letter-spacing:.16em;
+  color:var(--tx3);text-transform:uppercase;
+  opacity:0;animation:ag-fadeup .9s .8s both;
+}
+#apex-gate-{{ section.id }} .ag-scarcity strong{color:var(--gold);font-weight:500;}
+
+/* ── Bottom badge strip ────────────────────────────── */
+#apex-gate-{{ section.id }} .ag-badges{
+  display:flex;gap:20px;align-items:center;justify-content:center;
+  flex-wrap:wrap;margin-top:52px;
+  opacity:0;animation:ag-fadeup .9s .92s both;
+}
+#apex-gate-{{ section.id }} .ag-badge{
+  display:flex;align-items:center;gap:7px;
+  font-family:var(--fm);font-size:9px;letter-spacing:.14em;
+  color:var(--tx3);text-transform:uppercase;
+}
+#apex-gate-{{ section.id }} .ag-badge::before{
+  content:'✓';color:var(--gold);font-size:10px;
+}
+#apex-gate-{{ section.id }} .ag-badge-sep{
+  width:1px;height:14px;background:var(--border2);
+}
+
+/* ── APEX wordmark watermark ───────────────────────── */
+#apex-gate-{{ section.id }} .ag-watermark{
+  position:absolute;
+  bottom:-20px;left:50%;transform:translateX(-50%);
+  font-family:var(--fd);font-size:clamp(100px,20vw,240px);
+  color:transparent;-webkit-text-stroke:1px rgba(245,197,66,.045);
+  letter-spacing:.08em;line-height:1;
+  pointer-events:none;z-index:0;user-select:none;
+  white-space:nowrap;
+}
+
+/* ── Vertical side label ───────────────────────────── */
+#apex-gate-{{ section.id }} .ag-side-lbl{
+  position:absolute;
+  left:36px;top:50%;transform:translateY(-50%) rotate(-90deg);
+  transform-origin:center center;
+  font-family:var(--fm);font-size:9px;letter-spacing:.28em;
+  color:var(--tx3);text-transform:uppercase;
+  pointer-events:none;z-index:2;white-space:nowrap;
+}
+#apex-gate-{{ section.id }} .ag-side-lbl-r{
+  position:absolute;
+  right:36px;top:50%;transform:translateY(-50%) rotate(90deg);
+  transform-origin:center center;
+  font-family:var(--fm);font-size:9px;letter-spacing:.28em;
+  color:var(--tx3);text-transform:uppercase;
+  pointer-events:none;z-index:2;white-space:nowrap;
+}
+
+/* ── Keyframes ─────────────────────────────────────── */
+@keyframes ag-fadeup{
+  from{opacity:0;transform:translateY(22px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+
+/* ── Responsive ────────────────────────────────────── */
+@media(max-width:680px){
+  #apex-gate-{{ section.id }}{padding:100px 20px 80px;}
+  #apex-gate-{{ section.id }} .ag-form{flex-direction:column;}
+  #apex-gate-{{ section.id }} .ag-input{border-bottom:1px solid var(--border2);}
+  #apex-gate-{{ section.id }} .ag-submit{width:100%;text-align:center;}
+  #apex-gate-{{ section.id }} .ag-side-lbl,
+  #apex-gate-{{ section.id }} .ag-side-lbl-r{display:none;}
+}
+</style>
+
+<section id="apex-gate-{{ section.id }}" role="main" aria-label="APEX Early Access Waitlist">
+
+  <!-- BG layers -->
+  <div class="ag-top-rule" aria-hidden="true"></div>
+  <div class="ag-grid"    aria-hidden="true"></div>
+  <div class="ag-glow"    aria-hidden="true"></div>
+  <div class="ag-orb ag-orb-a" aria-hidden="true"></div>
+  <div class="ag-orb ag-orb-b" aria-hidden="true"></div>
+  <div class="ag-noise"   aria-hidden="true"></div>
+  <canvas class="ag-canvas" id="ag-canvas-{{ section.id }}" aria-hidden="true"></canvas>
+  <div class="ag-watermark" aria-hidden="true">APEX</div>
+
+  <!-- Side labels -->
+  <div class="ag-side-lbl"  aria-hidden="true">Early Access · {{ section.settings.current_count }} Operators</div>
+  <div class="ag-side-lbl-r" aria-hidden="true">Founding Access · Limited Intake</div>
+
+  <!-- Content -->
+  <div class="ag-content">
+
+    <!-- Eyebrow -->
+    <div class="ag-eyebrow">{{ section.settings.eyebrow }}</div>
+
+    <!-- Headline -->
+    <h1 class="ag-h1">
+      <span class="ag-h1-line1">{{ section.settings.headline_line1 }}</span>
+      <span class="ag-h1-line2">{{ section.settings.headline_line2 }}</span>
+    </h1>
+
+    <!-- Sub -->
+    <p class="ag-sub">{{ section.settings.subheadline }}</p>
+
+    <!-- Form -->
+    {% form 'customer', id: 'ag-form-{{ section.id }}', class: 'ag-form' %}
+      <input type="hidden" name="contact[tags]" value="apex-waitlist,founding-operator"/>
+      <input
+        class="ag-input"
+        id="ag-email-{{ section.id }}"
+        type="email"
+        name="contact[email]"
+        placeholder="{{ section.settings.email_placeholder }}"
+        required
+        autocomplete="email"
+        aria-label="Email address"
+      />
+      <button type="submit" class="ag-submit" aria-label="{{ section.settings.button_text }}">
+        {{ section.settings.button_text }}
+      </button>
+    {% endform %}
+
+    <!-- Success message (shown via JS after submit) -->
+    <div class="ag-success" id="ag-success-{{ section.id }}" role="status" aria-live="polite">
+      {{ section.settings.success_message }}
+    </div>
+
+    <!-- Waitlist counter -->
+    <div class="ag-counter-wrap">
+      <div class="ag-count-row">
+        <div class="ag-count-dots" aria-hidden="true">
+          <div class="ag-count-dot"></div>
+          <div class="ag-count-dot"></div>
+          <div class="ag-count-dot"></div>
+        </div>
+        <div class="ag-count-num" id="ag-num-{{ section.id }}" aria-label="{{ section.settings.current_count }} operators on the waitlist">0</div>
+      </div>
+      <div class="ag-count-label">{{ section.settings.count_label }}</div>
+
+      <!-- Progress bar toward goal -->
+      <div class="ag-progress-wrap" role="progressbar"
+        aria-valuenow="{{ section.settings.current_count }}"
+        aria-valuemin="0"
+        aria-valuemax="{{ section.settings.goal_count }}"
+        aria-label="Waitlist progress toward founding goal">
+        <div class="ag-progress-labels">
+          <span>0 operators</span>
+          <span>Goal: {{ section.settings.goal_count }}</span>
+        </div>
+        <div class="ag-progress-outer">
+          <div class="ag-progress-fill" id="ag-prog-{{ section.id }}"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scarcity -->
+    <p class="ag-scarcity">
+      {{ section.settings.scarcity_text | replace: section.settings.scarcity_highlight, '<strong>' | append: '</strong>' }}
+    </p>
+
+    <!-- Trust badges -->
+    <div class="ag-badges" aria-label="Trust signals">
+      {% for block in section.blocks %}
+        {% if block.type == 'badge' %}
+          <span class="ag-badge" {{ block.shopify_attributes }}>{{ block.settings.badge_text }}</span>
+          {% unless forloop.last %}<span class="ag-badge-sep" aria-hidden="true"></span>{% endunless %}
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </div><!-- /.ag-content -->
+
+</section>
+
+<script>
+(function(){
+  /* ── Config ─────────────────────────────── */
+  var SECTION_ID  = '{{ section.id }}';
+  var TARGET_NUM  = {{ section.settings.current_count | plus: 0 }};
+  var GOAL_NUM    = {{ section.settings.goal_count | plus: 0 }};
+  var COUNT_DUR   = {{ section.settings.counter_duration | plus: 0 }};   /* ms */
+  var FORM_ID     = 'ag-form-' + SECTION_ID;
+  var NUM_ID      = 'ag-num-'  + SECTION_ID;
+  var PROG_ID     = 'ag-prog-' + SECTION_ID;
+  var SUCCESS_ID  = 'ag-success-' + SECTION_ID;
+  var CANVAS_ID   = 'ag-canvas-' + SECTION_ID;
+
+  /* ── Number counter animation ────────────── */
+  function animateCount(el, from, to, duration){
+    if(!el) return;
+    var start = null;
+    var range = to - from;
+    function ease(t){ return t < .5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+    function step(ts){
+      if(!start) start = ts;
+      var elapsed = ts - start;
+      var progress = Math.min(elapsed / duration, 1);
+      var val = Math.round(from + range * ease(progress));
+      el.textContent = val.toLocaleString();
+      if(progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ── Progress bar ────────────────────────── */
+  function setProgress(){
+    var bar = document.getElementById(PROG_ID);
+    if(!bar) return;
+    var pct = GOAL_NUM > 0 ? Math.min(100, Math.round((TARGET_NUM / GOAL_NUM) * 100)) : 0;
+    setTimeout(function(){ bar.style.width = pct + '%'; }, 400);
+  }
+
+  /* ── Intersection observer — trigger on view ─ */
+  var numEl = document.getElementById(NUM_ID);
+  if(numEl && 'IntersectionObserver' in window){
+    var triggered = false;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting && !triggered){
+          triggered = true;
+          animateCount(numEl, 0, TARGET_NUM, COUNT_DUR);
+          setProgress();
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    io.observe(numEl);
+  } else if(numEl){
+    /* fallback — just set the number */
+    numEl.textContent = TARGET_NUM.toLocaleString();
+    setProgress();
+  }
+
+  /* ── Form submit — show success message ───── */
+  var form = document.getElementById(FORM_ID);
+  if(form){
+    form.addEventListener('submit', function(){
+      setTimeout(function(){
+        var s = document.getElementById(SUCCESS_ID);
+        if(s){ form.style.display = 'none'; s.classList.add('show'); }
+      }, 300);
+    });
+  }
+
+  /* ── Particle canvas ─────────────────────── */
+  var canvas  = document.getElementById(CANVAS_ID);
+  if(!canvas) return;
+  var ctx     = canvas.getContext('2d');
+  var particles = [];
+  var GOLD = '{{ section.settings.accent_color }}';
+
+  function resize(){
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  /* spawn subtle slow particles */
+  for(var i = 0; i < {{ section.settings.particle_count }}; i++){
+    particles.push({
+      x:   Math.random() * canvas.width,
+      y:   Math.random() * canvas.height,
+      r:   Math.random() * 1.4 + 0.4,
+      vx:  (Math.random() - 0.5) * 0.18,
+      vy:  (Math.random() - 0.5) * 0.18,
+      a:   Math.random() * 0.4 + 0.08,
+      da:  (Math.random() - 0.5) * 0.003,
+    });
+  }
+
+  function tick(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(function(p){
+      p.x  += p.vx; p.y  += p.vy;
+      p.a  += p.da;
+      if(p.a > 0.55) p.da = -Math.abs(p.da);
+      if(p.a < 0.04) p.da =  Math.abs(p.da);
+      if(p.x < 0)              p.x = canvas.width;
+      if(p.x > canvas.width)   p.x = 0;
+      if(p.y < 0)              p.y = canvas.height;
+      if(p.y > canvas.height)  p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = GOLD;
+      ctx.globalAlpha = p.a;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "APEX Gate",
+  "tag": "section",
+  "class": "apex-gate-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Brand"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#0b0b0f"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Gold Accent Color",
+      "default": "#f5c542"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Label",
+      "default": "FOUNDING ACCESS"
+    },
+    {
+      "type": "text",
+      "id": "headline_line1",
+      "label": "Headline — Line 1",
+      "default": "This isn't another"
+    },
+    {
+      "type": "text",
+      "id": "headline_line2",
+      "label": "Headline — Line 2 (gold accent)",
+      "default": "habit tracker."
+    },
+    {
+      "type": "textarea",
+      "id": "subheadline",
+      "label": "Subheadline",
+      "default": "APEX is the level-up system for young entrepreneurs who want discipline, structure, and real progress."
+    },
+    {
+      "type": "header",
+      "content": "Form"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email Placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Join the Ascent"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success Message (shown after submit)",
+      "default": "✓ You're in. We'll notify you when founding access opens."
+    },
+    {
+      "type": "header",
+      "content": "Waitlist Counter"
+    },
+    {
+      "type": "number",
+      "id": "current_count",
+      "label": "Current Waitlist Count",
+      "info": "Update this number manually as your list grows. The page will animate to this number on load.",
+      "default": 327
+    },
+    {
+      "type": "number",
+      "id": "goal_count",
+      "label": "Founding Goal (e.g. 500)",
+      "info": "The number at which founding access opens. Controls the progress bar.",
+      "default": 500
+    },
+    {
+      "type": "text",
+      "id": "count_label",
+      "label": "Count Label Text",
+      "default": "operators on the waitlist"
+    },
+    {
+      "type": "number",
+      "id": "counter_duration",
+      "label": "Counter Animation Duration (ms)",
+      "default": 2400,
+      "info": "How long the number counts up. 2000–3000ms recommended."
+    },
+    {
+      "type": "header",
+      "content": "Scarcity Line"
+    },
+    {
+      "type": "text",
+      "id": "scarcity_text",
+      "label": "Scarcity / Gate Text",
+      "default": "Founding access opens at 500 operators."
+    },
+    {
+      "type": "text",
+      "id": "scarcity_highlight",
+      "label": "Word(s) to highlight gold in scarcity line",
+      "default": "500 operators."
+    },
+    {
+      "type": "header",
+      "content": "Particles"
+    },
+    {
+      "type": "range",
+      "id": "particle_count",
+      "label": "Number of Ambient Particles",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "default": 35,
+      "info": "Subtle floating gold dots. 30–50 recommended. Set to 0 to disable."
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 60,
+      "max": 240,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 60,
+      "max": 240,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 100
+    }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Trust Badge",
+      "settings": [
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge Text",
+          "default": "No spam. Ever."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APEX Gate",
+      "blocks": [
+        {
+          "type": "badge",
+          "settings": { "badge_text": "No spam. Ever." }
+        },
+        {
+          "type": "badge",
+          "settings": { "badge_text": "Cancel anytime" }
+        },
+        {
+          "type": "badge",
+          "settings": { "badge_text": "First access to founding pricing" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
