@@ -1,0 +1,459 @@
+{% comment %}
+  APEX — Pricing Section
+  File: sections/apex-pricing.liquid
+{% endcomment %}
+
+<style>
+  #apex-price-{{ section.id }} *,
+  #apex-price-{{ section.id }} *::before,
+  #apex-price-{{ section.id }} *::after { box-sizing:border-box;margin:0;padding:0; }
+  #apex-price-{{ section.id }} {
+    --gold:{{ section.settings.accent_color }};
+    --gd:rgba(245,197,66,.14); --gd2:rgba(245,197,66,.07); --gd3:rgba(245,197,66,.04);
+    --bg:{{ section.settings.bg_color }};
+    --bg2:#0f0f15; --bg3:#14141c; --bg4:#1a1a26;
+    --border:rgba(255,255,255,.07); --border2:rgba(255,255,255,.13); --border3:rgba(255,255,255,.22);
+    --tx:#e8eaf4; --tx2:#7a8296; --tx3:#3c4256;
+    --fd:'Bebas Neue','Impact',sans-serif;
+    --fm:'JetBrains Mono','Fira Code','Courier New',monospace;
+    background:var(--bg); color:var(--tx); font-family:var(--fm);
+    position:relative; overflow:hidden;
+    padding:{{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+  #apex-price-{{ section.id }} .apr-bg {
+    position:absolute; inset:0;
+    background-image:linear-gradient(rgba(245,197,66,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(245,197,66,.03) 1px,transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black,transparent);
+    pointer-events:none; z-index:0;
+  }
+  #apex-price-{{ section.id }} .apr-inner {
+    position:relative; z-index:1; max-width:1160px; margin:0 auto; padding:0 48px;
+  }
+
+  /* header */
+  #apex-price-{{ section.id }} .apr-header { text-align:center; margin-bottom:56px; }
+  #apex-price-{{ section.id }} .apr-tag {
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:var(--fm); font-size:10px; letter-spacing:.28em;
+    color:var(--gold); text-transform:uppercase; margin-bottom:20px;
+    padding:6px 18px; background:var(--gd); border:1px solid rgba(245,197,66,.22);
+  }
+  #apex-price-{{ section.id }} .apr-tag::before,
+  #apex-price-{{ section.id }} .apr-tag::after { content:''; width:14px; height:1px; background:var(--gold); opacity:.5; }
+  #apex-price-{{ section.id }} .apr-h2 {
+    font-family:var(--fd); font-size:clamp(44px,6vw,84px);
+    line-height:.9; letter-spacing:-.01em; margin-bottom:16px;
+  }
+  #apex-price-{{ section.id }} .apr-h2 span { color:var(--gold); }
+  #apex-price-{{ section.id }} .apr-h2-sub {
+    font-family:var(--fm); font-size:12px; color:var(--tx2);
+    line-height:1.85; max-width:480px; margin:0 auto; letter-spacing:.025em;
+  }
+
+  /* billing toggle */
+  #apex-price-{{ section.id }} .apr-billing {
+    display:flex; align-items:center; gap:14px; justify-content:center; margin-bottom:52px;
+  }
+  #apex-price-{{ section.id }} .apr-bl-lbl {
+    font-family:var(--fm); font-size:11px; color:var(--tx2); letter-spacing:.08em;
+  }
+  #apex-price-{{ section.id }} .apr-tog {
+    width:52px; height:28px; background:var(--bg4);
+    border:1px solid var(--border2); position:relative; cursor:pointer; transition:all .3s;
+  }
+  #apex-price-{{ section.id }} .apr-tog.on { background:var(--gold); border-color:var(--gold); }
+  #apex-price-{{ section.id }} .apr-tog-knob {
+    position:absolute; top:4px; left:4px; width:18px; height:18px;
+    background:var(--tx2); transition:transform .3s,background .3s;
+  }
+  #apex-price-{{ section.id }} .apr-tog.on .apr-tog-knob { transform:translateX(24px); background:#0b0b0f; }
+  #apex-price-{{ section.id }} .apr-save {
+    font-family:var(--fm); font-size:9px; padding:3px 11px;
+    background:rgba(0,217,110,.12); color:#00d96e;
+    border:1px solid rgba(0,217,110,.25); letter-spacing:.08em;
+  }
+
+  /* plans grid */
+  #apex-price-{{ section.id }} .apr-plans {
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:1px; background:var(--border2); border:1px solid var(--border2);
+    margin-bottom:40px;
+  }
+  #apex-price-{{ section.id }} .apr-plan {
+    background:var(--bg3); padding:36px 30px; position:relative;
+    overflow:hidden; transition:background .28s;
+    display:flex; flex-direction:column;
+  }
+  #apex-price-{{ section.id }} .apr-plan:hover { background:var(--bg4); }
+  #apex-price-{{ section.id }} .apr-plan-bar {
+    position:absolute; top:0; inset-x:0; height:2px;
+    background:var(--border); transition:background .3s;
+  }
+  #apex-price-{{ section.id }} .apr-plan:hover .apr-plan-bar {
+    background:linear-gradient(90deg,var(--gold),transparent);
+  }
+  /* featured */
+  #apex-price-{{ section.id }} .apr-plan.feat { background:linear-gradient(160deg,#14141c 0%,#0f0f15 100%); }
+  #apex-price-{{ section.id }} .apr-plan.feat .apr-plan-bar {
+    background:linear-gradient(90deg,var(--gold),#ffd966);
+    height:2px; opacity:1;
+  }
+  /* badge */
+  #apex-price-{{ section.id }} .apr-badge {
+    display:inline-block; font-family:var(--fm); font-size:8px;
+    background:var(--gold); color:#0b0b0f;
+    padding:3px 11px; margin-bottom:16px; letter-spacing:.12em; text-transform:uppercase;
+    align-self:flex-start;
+  }
+  /* tier */
+  #apex-price-{{ section.id }} .apr-tier {
+    font-family:var(--fm); font-size:9px; letter-spacing:.25em;
+    color:var(--tx3); text-transform:uppercase; margin-bottom:12px;
+  }
+  #apex-price-{{ section.id }} .apr-plan.feat .apr-tier { color:var(--gold); }
+  /* price */
+  #apex-price-{{ section.id }} .apr-price-row {
+    display:flex; align-items:flex-end; gap:3px; margin-bottom:4px;
+  }
+  #apex-price-{{ section.id }} .apr-cur {
+    font-family:var(--fm); font-size:18px; color:var(--tx2);
+    padding-bottom:8px; line-height:1;
+  }
+  #apex-price-{{ section.id }} .apr-price-num {
+    font-family:var(--fd); font-size:clamp(52px,6vw,72px);
+    color:var(--tx); line-height:1; letter-spacing:-.02em;
+    transition:all .3s;
+  }
+  #apex-price-{{ section.id }} .apr-plan.feat .apr-price-num { color:var(--gold); }
+  #apex-price-{{ section.id }} .apr-per {
+    font-family:var(--fm); font-size:10px; color:var(--tx3);
+    margin-bottom:22px; height:14px; letter-spacing:.06em;
+  }
+  #apex-price-{{ section.id }} .apr-rule { height:1px; background:var(--border); margin-bottom:20px; }
+  #apex-price-{{ section.id }} .apr-tagline {
+    font-family:var(--fm); font-size:11px; color:var(--tx2);
+    line-height:1.85; margin-bottom:26px; letter-spacing:.025em; flex-shrink:0;
+  }
+  /* features */
+  #apex-price-{{ section.id }} .apr-feats {
+    list-style:none; margin-bottom:32px; flex:1;
+    display:flex; flex-direction:column;
+  }
+  #apex-price-{{ section.id }} .apr-feat {
+    font-family:var(--fm); font-size:10px; color:var(--tx2);
+    padding:7px 0; border-bottom:1px solid var(--border);
+    display:flex; align-items:flex-start; gap:9px; letter-spacing:.03em;
+    line-height:1.5;
+  }
+  #apex-price-{{ section.id }} .apr-feat:last-child { border-bottom:none; }
+  #apex-price-{{ section.id }} .apr-feat-ic { flex-shrink:0; margin-top:1px; }
+  #apex-price-{{ section.id }} .apr-feat.yes .apr-feat-ic { color:var(--gold); }
+  #apex-price-{{ section.id }} .apr-feat.locked { color:var(--tx3); }
+  #apex-price-{{ section.id }} .apr-feat.locked .apr-feat-ic { color:var(--tx3); opacity:.4; }
+  /* cta */
+  #apex-price-{{ section.id }} .apr-cta {
+    display:block; padding:14px 20px; text-align:center; text-decoration:none;
+    font-family:var(--fd); font-size:20px; letter-spacing:.07em; line-height:1;
+    border:1px solid var(--border2); color:var(--tx); background:none;
+    transition:all .28s; cursor:pointer;
+  }
+  #apex-price-{{ section.id }} .apr-cta:hover { border-color:var(--gold); color:var(--gold); }
+  #apex-price-{{ section.id }} .apr-plan.feat .apr-cta {
+    background:var(--gold); color:#0b0b0f; border-color:var(--gold);
+  }
+  #apex-price-{{ section.id }} .apr-plan.feat .apr-cta:hover {
+    background:#ffd966; box-shadow:0 8px 32px rgba(245,197,66,.35);
+  }
+
+  /* guarantee */
+  #apex-price-{{ section.id }} .apr-guarantee {
+    text-align:center; margin-bottom:40px;
+    font-family:var(--fm); font-size:11px; color:var(--tx3);
+    letter-spacing:.06em; line-height:1.8;
+  }
+  #apex-price-{{ section.id }} .apr-guarantee a { color:var(--gold); text-decoration:none; }
+
+  /* comparison table */
+  #apex-price-{{ section.id }} .apr-compare-h {
+    font-family:var(--fd); font-size:clamp(28px,4vw,44px);
+    letter-spacing:.04em; margin-bottom:20px; text-align:center;
+  }
+  #apex-price-{{ section.id }} .apr-compare-h span { color:var(--gold); }
+  #apex-price-{{ section.id }} .apr-table {
+    border:1px solid var(--border2);
+    border-collapse:collapse; width:100%;
+  }
+  #apex-price-{{ section.id }} .apr-table th,
+  #apex-price-{{ section.id }} .apr-table td {
+    font-family:var(--fm); font-size:11px; padding:13px 18px;
+    border-bottom:1px solid var(--border); text-align:center; color:var(--tx2);
+    letter-spacing:.04em;
+  }
+  #apex-price-{{ section.id }} .apr-table th {
+    font-family:var(--fd); font-size:18px; letter-spacing:.06em;
+    color:var(--tx); background:var(--bg3);
+  }
+  #apex-price-{{ section.id }} .apr-table th.feat-col { color:var(--gold); }
+  #apex-price-{{ section.id }} .apr-table td:first-child { text-align:left; color:var(--tx2); }
+  #apex-price-{{ section.id }} .apr-table tr:last-child td { border-bottom:none; }
+  #apex-price-{{ section.id }} .apr-table .check { color:var(--gold); font-size:14px; }
+  #apex-price-{{ section.id }} .apr-table .dash { color:var(--tx3); }
+  #apex-price-{{ section.id }} .apr-table .feat-col { background:rgba(245,197,66,.03); }
+  #apex-price-{{ section.id }} .apr-table tr:hover td { background:var(--bg3); }
+
+  @media(max-width:900px){
+    #apex-price-{{ section.id }} .apr-plans { grid-template-columns:1fr; }
+    #apex-price-{{ section.id }} .apr-inner { padding:0 28px; }
+    #apex-price-{{ section.id }} .apr-table { display:none; }
+  }
+  @media(max-width:600px){
+    #apex-price-{{ section.id }} .apr-inner { padding:0 20px; }
+  }
+</style>
+
+<section id="apex-price-{{ section.id }}">
+  <div class="apr-bg" aria-hidden="true"></div>
+  <div class="apr-inner">
+
+    <div class="apr-header">
+      <div class="apr-tag">{{ section.settings.section_tag }}</div>
+      <h2 class="apr-h2">{{ section.settings.headline | replace: section.settings.headline_accent, '<span>' | append: '</span>' }}</h2>
+      <p class="apr-h2-sub">{{ section.settings.subtext }}</p>
+    </div>
+
+    <!-- Billing toggle -->
+    <div class="apr-billing">
+      <span class="apr-bl-lbl">Monthly</span>
+      <div class="apr-tog" id="apr-tog-{{ section.id }}" role="switch" aria-checked="false" tabindex="0">
+        <div class="apr-tog-knob"></div>
+      </div>
+      <span class="apr-bl-lbl">Annual</span>
+      <span class="apr-save">Save {{ section.settings.annual_save }}</span>
+    </div>
+
+    <!-- Plans -->
+    <div class="apr-plans">
+      {% for block in section.blocks %}
+        {% if block.type == 'plan' %}
+          <div class="apr-plan{% if block.settings.featured %} feat{% endif %}" {{ block.shopify_attributes }}>
+            <div class="apr-plan-bar"></div>
+            {% if block.settings.featured %}<div class="apr-badge">{{ block.settings.badge }}</div>{% endif %}
+            <div class="apr-tier">{{ block.settings.tier_label }}</div>
+            <div class="apr-price-row">
+              <span class="apr-cur">$</span>
+              <span class="apr-price-num"
+                data-monthly="{{ block.settings.price_monthly }}"
+                data-annual="{{ block.settings.price_annual }}">
+                {{ block.settings.price_monthly }}
+              </span>
+            </div>
+            <div class="apr-per" data-monthly="{{ block.settings.period_monthly }}" data-annual="{{ block.settings.period_annual }}">
+              {{ block.settings.period_monthly }}
+            </div>
+            <div class="apr-rule"></div>
+            <p class="apr-tagline">{{ block.settings.tagline }}</p>
+            <ul class="apr-feats">
+              {% assign feat_lines = block.settings.features | split: newline_char %}
+              {% assign feat_lines = block.settings.features | split: '
+' %}
+              {% for feat_line in feat_lines %}
+                {% assign feat_parts = feat_line | split: '::' %}
+                {% assign feat_type = feat_parts[0] | strip %}
+                {% assign feat_text = feat_parts[1] | strip %}
+                {% if feat_text != blank %}
+                  <li class="apr-feat {{ feat_type }}">
+                    <span class="apr-feat-ic">{% if feat_type == 'yes' %}+{% else %}—{% endif %}</span>
+                    {{ feat_text }}
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+            <a href="{{ block.settings.cta_url }}" class="apr-cta"
+              {% if block.settings.cta_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+              {{ block.settings.cta_text }}
+            </a>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- Guarantee -->
+    <p class="apr-guarantee">{{ section.settings.guarantee_text }}</p>
+
+    <!-- Feature comparison table -->
+    {% if section.settings.show_table %}
+    <div class="apr-compare-h" style="margin-top:60px">Full <span>Comparison.</span></div>
+    <table class="apr-table" aria-label="Plan feature comparison">
+      <thead>
+        <tr>
+          <th style="text-align:left">Feature</th>
+          <th>Free</th>
+          <th class="feat-col">Pro</th>
+          <th>Elite</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for block in section.blocks %}
+          {% if block.type == 'compare_row' %}
+            <tr {{ block.shopify_attributes }}>
+              <td>{{ block.settings.feature_name }}</td>
+              <td class="{% if block.settings.free %}check{% else %}dash{% endif %}">
+                {% if block.settings.free %}✓{% else %}—{% endif %}
+              </td>
+              <td class="feat-col {% if block.settings.pro %}check{% else %}dash{% endif %}">
+                {% if block.settings.pro %}✓{% else %}—{% endif %}
+              </td>
+              <td class="{% if block.settings.elite %}check{% else %}dash{% endif %}">
+                {% if block.settings.elite %}✓{% else %}—{% endif %}
+              </td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+  </div>
+</section>
+
+<script>
+(function() {
+  var tog = document.getElementById('apr-tog-{{ section.id }}');
+  if (!tog) return;
+  var on = false;
+  function toggle() {
+    on = !on;
+    tog.classList.toggle('on', on);
+    tog.setAttribute('aria-checked', on ? 'true' : 'false');
+    var nums = document.querySelectorAll('#apex-price-{{ section.id }} .apr-price-num');
+    var pers = document.querySelectorAll('#apex-price-{{ section.id }} .apr-per');
+    nums.forEach(function(el) {
+      el.textContent = on ? el.getAttribute('data-annual') : el.getAttribute('data-monthly');
+    });
+    pers.forEach(function(el) {
+      el.textContent = on ? el.getAttribute('data-annual') : el.getAttribute('data-monthly');
+    });
+  }
+  tog.addEventListener('click', toggle);
+  tog.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "APEX Pricing",
+  "tag": "section",
+  "settings": [
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#0b0b0f" },
+    { "type": "color", "id": "accent_color", "label": "Accent (Gold)", "default": "#f5c542" },
+    { "type": "text", "id": "section_tag", "label": "Section Tag", "default": "Investment" },
+    { "type": "textarea", "id": "headline", "label": "Headline", "default": "Choose your tier." },
+    { "type": "text", "id": "headline_accent", "label": "Words to highlight gold", "default": "your tier." },
+    { "type": "textarea", "id": "subtext", "label": "Subtitle", "default": "Start free. No credit card. Upgrade when you're ready to operate at your ceiling." },
+    { "type": "text", "id": "annual_save", "label": "Annual savings label", "default": "Save 40%" },
+    { "type": "textarea", "id": "guarantee_text", "label": "Guarantee line", "default": "🔒 30-day money-back guarantee on all paid tiers · No questions · Cancel anytime · Prices in USD" },
+    { "type": "checkbox", "id": "show_table", "label": "Show comparison table", "default": true },
+    { "type": "range", "id": "padding_top", "min": 40, "max": 200, "step": 4, "unit": "px", "label": "Padding Top", "default": 100 },
+    { "type": "range", "id": "padding_bottom", "min": 40, "max": 200, "step": 4, "unit": "px", "label": "Padding Bottom", "default": 100 }
+  ],
+  "blocks": [
+    {
+      "type": "plan",
+      "name": "Pricing Plan",
+      "settings": [
+        { "type": "checkbox", "id": "featured", "label": "Featured plan", "default": false },
+        { "type": "text", "id": "badge", "label": "Badge (if featured)", "default": "Most Popular" },
+        { "type": "text", "id": "tier_label", "label": "Tier Label", "default": "Free" },
+        { "type": "text", "id": "price_monthly", "label": "Monthly Price", "default": "0" },
+        { "type": "text", "id": "price_annual", "label": "Annual Price (per month)", "default": "0" },
+        { "type": "text", "id": "period_monthly", "label": "Monthly Period Label", "default": "forever free" },
+        { "type": "text", "id": "period_annual", "label": "Annual Period Label", "default": "forever free" },
+        { "type": "text", "id": "tagline", "label": "Plan Tagline", "default": "Start your audit. No commitment required." },
+        {
+          "type": "textarea",
+          "id": "features",
+          "label": "Feature list",
+          "info": "One per line. Format: yes::Feature text OR locked::Feature text",
+          "default": "yes::Up to 5 habit assets\nyes::Daily task ledger\nyes::Focus timer (25m only)\nlocked::XP & rank system\nlocked::Achievements & badges\nlocked::28-day audit trail"
+        },
+        { "type": "text", "id": "cta_text", "label": "CTA Button Text", "default": "Start Free" },
+        { "type": "url", "id": "cta_url", "label": "CTA URL" },
+        { "type": "checkbox", "id": "cta_new_tab", "label": "Open in new tab", "default": false }
+      ]
+    },
+    {
+      "type": "compare_row",
+      "name": "Comparison Row",
+      "settings": [
+        { "type": "text", "id": "feature_name", "label": "Feature Name", "default": "Habit tracking" },
+        { "type": "checkbox", "id": "free", "label": "Available on Free", "default": true },
+        { "type": "checkbox", "id": "pro", "label": "Available on Pro", "default": true },
+        { "type": "checkbox", "id": "elite", "label": "Available on Elite", "default": true }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APEX Pricing",
+      "blocks": [
+        {
+          "type": "plan",
+          "settings": {
+            "tier_label": "Free",
+            "price_monthly": "0",
+            "price_annual": "0",
+            "period_monthly": "forever free",
+            "period_annual": "forever free",
+            "tagline": "Open the audit. Prove you're serious before investing a dollar.",
+            "features": "yes::Up to 5 habit assets\nyes::Daily task ledger\nyes::Focus timer (25m only)\nyes::7-day audit history\nlocked::XP & rank system\nlocked::Achievement badges\nlocked::28-day heatmap\nlocked::Field journal\nlocked::Global leaderboard",
+            "cta_text": "Start Free"
+          }
+        },
+        {
+          "type": "plan",
+          "settings": {
+            "featured": true,
+            "badge": "Most Popular",
+            "tier_label": "Pro",
+            "price_monthly": "19",
+            "price_annual": "11",
+            "period_monthly": "per month",
+            "period_annual": "per month · billed annually",
+            "tagline": "The complete audit system. Operate at your ceiling — every single day.",
+            "features": "yes::Unlimited habit assets\nyes::Full XP & 10-rank system\nyes::XP multipliers on streaks\nyes::All 4 focus timer modes\nyes::15 achievement badges\nyes::28-day heatmap & analytics\nyes::Field journal + habit notes\nyes::Mood & energy tracking\nyes::Global leaderboard\nyes::API access",
+            "cta_text": "Go Pro →"
+          }
+        },
+        {
+          "type": "plan",
+          "settings": {
+            "tier_label": "Elite",
+            "price_monthly": "39",
+            "price_annual": "23",
+            "period_monthly": "per month",
+            "period_annual": "per month · billed annually",
+            "tagline": "The inner circle. For founders who treat their life like a high-performance operation.",
+            "features": "yes::Everything in Pro\nyes::1-on-1 accountability pairing\nyes::Private Elite Discord\nyes::Weekly group debrief calls\nyes::Custom audit programs\nyes::Early feature access\nyes::APEX gear drops\nyes::Lifetime rate lock option\nyes::Direct founder access\nyes::Name on global leaderboard",
+            "cta_text": "Go Elite →"
+          }
+        },
+        { "type": "compare_row", "settings": { "feature_name": "Habit tracking", "free": true, "pro": true, "elite": true } },
+        { "type": "compare_row", "settings": { "feature_name": "Max habits", "free": false, "pro": true, "elite": true } },
+        { "type": "compare_row", "settings": { "feature_name": "XP & rank system", "free": false, "pro": true, "elite": true } },
+        { "type": "compare_row", "settings": { "feature_name": "Streak multipliers", "free": false, "pro": true, "elite": true } },
+        { "type": "compare_row", "settings": { "feature_name": "28-day heatmap", "free": false, "pro": true, "elite": true } },
+        { "type": "compare_row", "settings": { "feature_name": "Field journal", "free": false, "pro": true, "elite": true } },
+        { "type": "compare_row", "settings": { "feature_name": "Achievement badges", "free": false, "pro": true, "elite": true } },
+        { "type": "compare_row", "settings": { "feature_name": "Global leaderboard", "free": false, "pro": true, "elite": true } },
+        { "type": "compare_row", "settings": { "feature_name": "Accountability pairing", "free": false, "pro": false, "elite": true } },
+        { "type": "compare_row", "settings": { "feature_name": "Private Elite Discord", "free": false, "pro": false, "elite": true } },
+        { "type": "compare_row", "settings": { "feature_name": "Weekly debrief calls", "free": false, "pro": false, "elite": true } },
+        { "type": "compare_row", "settings": { "feature_name": "Direct founder access", "free": false, "pro": false, "elite": true } }
+      ]
+    }
+  ]
+}
+{% endschema %}
