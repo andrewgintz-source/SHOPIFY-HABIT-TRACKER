@@ -80,15 +80,16 @@
   cursor: none;
 }
 
-@media (pointer: fine) {
-  body { cursor: none; }
-  input, button, a, select, textarea { cursor: none; }
+body {
+  background: var(--k);
+  color: var(--tx);
+  font-family: var(--fm);
+  overflow-x: hidden;
+  cursor: auto;
+  min-height: 100vh;
 }
 
-@media (pointer: coarse), (max-width: 900px) {
-  body { cursor: auto; }
-  input, button, a, select, textarea { cursor: auto; }
-  #cur, #cur2 { display: none !important; }
+input, button, a, select, textarea { cursor: auto; outline: none; }
 }
 
 /* ── CURSOR ────────────────────────────────── */
