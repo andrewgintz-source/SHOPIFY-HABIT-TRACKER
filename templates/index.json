@@ -509,6 +509,201 @@
         "padding_top": 100,
         "padding_bottom": 100
       }
+    },
+    "apex_pricing_iE9YK3": {
+      "type": "apex-pricing",
+      "blocks": {
+        "plan_CeyazT": {
+          "type": "plan",
+          "settings": {
+            "featured": false,
+            "badge": "Most Popular",
+            "tier_label": "Free",
+            "price_monthly": "0",
+            "price_annual": "0",
+            "period_monthly": "forever free",
+            "period_annual": "forever free",
+            "tagline": "Open the audit. Prove you're serious before investing a dollar.",
+            "features": "yes::Up to 5 habit assets\nyes::Daily task ledger\nyes::Focus timer (25m only)\nyes::7-day audit history\nlocked::XP & rank system\nlocked::Achievement badges\nlocked::28-day heatmap\nlocked::Field journal\nlocked::Global leaderboard",
+            "cta_text": "Start Free",
+            "cta_url": "",
+            "cta_new_tab": false
+          }
+        },
+        "plan_rk3BQp": {
+          "type": "plan",
+          "settings": {
+            "featured": true,
+            "badge": "Most Popular",
+            "tier_label": "Pro",
+            "price_monthly": "19",
+            "price_annual": "11",
+            "period_monthly": "per month",
+            "period_annual": "per month · billed annually",
+            "tagline": "The complete audit system. Operate at your ceiling — every single day.",
+            "features": "yes::Unlimited habit assets\nyes::Full XP & 10-rank system\nyes::XP multipliers on streaks\nyes::All 4 focus timer modes\nyes::15 achievement badges\nyes::28-day heatmap & analytics\nyes::Field journal + habit notes\nyes::Mood & energy tracking\nyes::Global leaderboard\nyes::API access",
+            "cta_text": "Go Pro →",
+            "cta_url": "",
+            "cta_new_tab": false
+          }
+        },
+        "plan_Ait8dL": {
+          "type": "plan",
+          "settings": {
+            "featured": false,
+            "badge": "Most Popular",
+            "tier_label": "Elite",
+            "price_monthly": "39",
+            "price_annual": "23",
+            "period_monthly": "per month",
+            "period_annual": "per month · billed annually",
+            "tagline": "The inner circle. For founders who treat their life like a high-performance operation.",
+            "features": "yes::Everything in Pro\nyes::1-on-1 accountability pairing\nyes::Private Elite Discord\nyes::Weekly group debrief calls\nyes::Custom audit programs\nyes::Early feature access\nyes::APEX gear drops\nyes::Lifetime rate lock option\nyes::Direct founder access\nyes::Name on global leaderboard",
+            "cta_text": "Go Elite →",
+            "cta_url": "",
+            "cta_new_tab": false
+          }
+        },
+        "compare_row_hNTajT": {
+          "type": "compare_row",
+          "settings": {
+            "feature_name": "Habit tracking",
+            "free": true,
+            "pro": true,
+            "elite": true
+          }
+        },
+        "compare_row_A6gLbE": {
+          "type": "compare_row",
+          "settings": {
+            "feature_name": "Max habits",
+            "free": false,
+            "pro": true,
+            "elite": true
+          }
+        },
+        "compare_row_UPXKbq": {
+          "type": "compare_row",
+          "settings": {
+            "feature_name": "XP & rank system",
+            "free": false,
+            "pro": true,
+            "elite": true
+          }
+        },
+        "compare_row_RxNQmU": {
+          "type": "compare_row",
+          "settings": {
+            "feature_name": "Streak multipliers",
+            "free": false,
+            "pro": true,
+            "elite": true
+          }
+        },
+        "compare_row_Vy7XXn": {
+          "type": "compare_row",
+          "settings": {
+            "feature_name": "28-day heatmap",
+            "free": false,
+            "pro": true,
+            "elite": true
+          }
+        },
+        "compare_row_Dmf8rb": {
+          "type": "compare_row",
+          "settings": {
+            "feature_name": "Field journal",
+            "free": false,
+            "pro": true,
+            "elite": true
+          }
+        },
+        "compare_row_7GMzrC": {
+          "type": "compare_row",
+          "settings": {
+            "feature_name": "Achievement badges",
+            "free": false,
+            "pro": true,
+            "elite": true
+          }
+        },
+        "compare_row_Kxyhfg": {
+          "type": "compare_row",
+          "settings": {
+            "feature_name": "Global leaderboard",
+            "free": false,
+            "pro": true,
+            "elite": true
+          }
+        },
+        "compare_row_8kYzrN": {
+          "type": "compare_row",
+          "settings": {
+            "feature_name": "Accountability pairing",
+            "free": false,
+            "pro": false,
+            "elite": true
+          }
+        },
+        "compare_row_AFrKQ7": {
+          "type": "compare_row",
+          "settings": {
+            "feature_name": "Private Elite Discord",
+            "free": false,
+            "pro": false,
+            "elite": true
+          }
+        },
+        "compare_row_kpPRLh": {
+          "type": "compare_row",
+          "settings": {
+            "feature_name": "Weekly debrief calls",
+            "free": false,
+            "pro": false,
+            "elite": true
+          }
+        },
+        "compare_row_TwX7Ag": {
+          "type": "compare_row",
+          "settings": {
+            "feature_name": "Direct founder access",
+            "free": false,
+            "pro": false,
+            "elite": true
+          }
+        }
+      },
+      "block_order": [
+        "plan_CeyazT",
+        "plan_rk3BQp",
+        "plan_Ait8dL",
+        "compare_row_hNTajT",
+        "compare_row_A6gLbE",
+        "compare_row_UPXKbq",
+        "compare_row_RxNQmU",
+        "compare_row_Vy7XXn",
+        "compare_row_Dmf8rb",
+        "compare_row_7GMzrC",
+        "compare_row_Kxyhfg",
+        "compare_row_8kYzrN",
+        "compare_row_AFrKQ7",
+        "compare_row_kpPRLh",
+        "compare_row_TwX7Ag"
+      ],
+      "name": "APEX Pricing",
+      "settings": {
+        "bg_color": "#0b0b0f",
+        "accent_color": "#f5c542",
+        "section_tag": "Investment",
+        "headline": "Choose your tier.",
+        "headline_accent": "your tier.",
+        "subtext": "Start free. No credit card. Upgrade when you're ready to operate at your ceiling.",
+        "annual_save": "Save 40%",
+        "guarantee_text": "🔒 30-day money-back guarantee on all paid tiers · No questions · Cancel anytime · Prices in USD",
+        "show_table": true,
+        "padding_top": 100,
+        "padding_bottom": 100
+      }
     }
   },
   "order": [
@@ -516,6 +711,7 @@
     "apex_problem_AF4ffM",
     "apex_how_it_works_BeE66K",
     "apex_tools_L4F4G7",
-    "apex_gamification_K9y7fH"
+    "apex_gamification_K9y7fH",
+    "apex_pricing_iE9YK3"
   ]
 }
