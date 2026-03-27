@@ -1,0 +1,235 @@
+{% comment %}
+  APEX — Testimonials / Social Proof Section
+  File: sections/apex-testimonials.liquid
+{% endcomment %}
+
+<style>
+  #apex-testi-{{ section.id }} *,
+  #apex-testi-{{ section.id }} *::before,
+  #apex-testi-{{ section.id }} *::after { box-sizing:border-box;margin:0;padding:0; }
+  #apex-testi-{{ section.id }} {
+    --gold:{{ section.settings.accent_color }};
+    --gd:rgba(245,197,66,.12); --gd2:rgba(245,197,66,.06);
+    --bg:{{ section.settings.bg_color }};
+    --bg2:#0f0f15; --bg3:#14141c; --bg4:#1a1a26;
+    --border:rgba(255,255,255,.07); --border2:rgba(255,255,255,.13);
+    --tx:#e8eaf4; --tx2:#7a8296; --tx3:#3c4256;
+    --fd:'Bebas Neue','Impact',sans-serif;
+    --fm:'JetBrains Mono','Fira Code','Courier New',monospace;
+    --fs:'Georgia',serif;
+    background:var(--bg); color:var(--tx); font-family:var(--fm);
+    position:relative; overflow:hidden;
+    padding:{{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+  #apex-testi-{{ section.id }} .at2-bg {
+    position:absolute; inset:0;
+    background-image:linear-gradient(rgba(245,197,66,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(245,197,66,.03) 1px,transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black,transparent);
+    pointer-events:none; z-index:0;
+  }
+  #apex-testi-{{ section.id }} .at2-inner {
+    position:relative; z-index:1; max-width:1160px; margin:0 auto; padding:0 48px;
+  }
+
+  /* header */
+  #apex-testi-{{ section.id }} .at2-header { margin-bottom:64px; }
+  #apex-testi-{{ section.id }} .at2-tag {
+    display:inline-flex; align-items:center; gap:9px;
+    font-family:var(--fm); font-size:10px; letter-spacing:.26em;
+    color:var(--gold); text-transform:uppercase; margin-bottom:18px;
+  }
+  #apex-testi-{{ section.id }} .at2-tag::before { content:''; width:18px; height:1px; background:var(--gold); }
+  #apex-testi-{{ section.id }} .at2-h2 {
+    font-family:var(--fd); font-size:clamp(44px,6vw,80px);
+    line-height:.9; letter-spacing:-.01em;
+  }
+  #apex-testi-{{ section.id }} .at2-h2 span { color:var(--gold); }
+
+  /* grid */
+  #apex-testi-{{ section.id }} .at2-grid {
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:1px; background:var(--border2); border:1px solid var(--border2);
+    margin-bottom:48px;
+  }
+  #apex-testi-{{ section.id }} .at2-card {
+    background:var(--bg3); padding:30px 26px;
+    display:flex; flex-direction:column;
+    position:relative; overflow:hidden;
+    transition:background .28s;
+  }
+  #apex-testi-{{ section.id }} .at2-card:hover { background:var(--bg4); }
+  #apex-testi-{{ section.id }} .at2-card::before {
+    content:''; position:absolute; top:0; inset-x:0; height:1px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    opacity:0; transition:opacity .3s;
+  }
+  #apex-testi-{{ section.id }} .at2-card:hover::before { opacity:.8; }
+  /* card header */
+  #apex-testi-{{ section.id }} .at2-card-top {
+    font-family:var(--fm); font-size:9px; color:var(--tx3);
+    letter-spacing:.18em; text-transform:uppercase; margin-bottom:16px;
+  }
+  /* stars */
+  #apex-testi-{{ section.id }} .at2-stars { display:flex; gap:3px; margin-bottom:16px; }
+  #apex-testi-{{ section.id }} .at2-star { color:var(--gold); font-size:13px; }
+  /* quote */
+  #apex-testi-{{ section.id }} .at2-quote {
+    font-family:var(--fs); font-size:17px; font-style:italic;
+    font-weight:normal; line-height:1.7; color:var(--tx);
+    margin-bottom:24px; flex:1;
+  }
+  #apex-testi-{{ section.id }} .at2-quote strong {
+    font-family:var(--fs); font-style:italic;
+    font-weight:600; color:var(--gold);
+  }
+  /* author */
+  #apex-testi-{{ section.id }} .at2-author {
+    display:flex; align-items:center; gap:12px;
+    padding-top:18px; border-top:1px solid var(--border);
+  }
+  #apex-testi-{{ section.id }} .at2-av {
+    width:40px; height:40px; background:var(--bg4); border:1px solid var(--border2);
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; flex-shrink:0;
+  }
+  #apex-testi-{{ section.id }} .at2-name {
+    font-family:var(--fd); font-size:18px; letter-spacing:.04em;
+    color:var(--tx); line-height:1; margin-bottom:3px;
+  }
+  #apex-testi-{{ section.id }} .at2-handle {
+    font-family:var(--fm); font-size:9px; color:var(--tx3); letter-spacing:.08em;
+  }
+
+  /* proof bar */
+  #apex-testi-{{ section.id }} .at2-proof {
+    display:flex; border:1px solid var(--border2);
+  }
+  #apex-testi-{{ section.id }} .at2-proof-item {
+    flex:1; padding:24px 20px; border-right:1px solid var(--border);
+    text-align:center; transition:background .25s;
+  }
+  #apex-testi-{{ section.id }} .at2-proof-item:last-child { border-right:none; }
+  #apex-testi-{{ section.id }} .at2-proof-item:hover { background:var(--gd); }
+  #apex-testi-{{ section.id }} .at2-proof-val {
+    font-family:var(--fd); font-size:38px; color:var(--gold);
+    line-height:1; display:block; margin-bottom:5px; letter-spacing:-.01em;
+  }
+  #apex-testi-{{ section.id }} .at2-proof-lbl {
+    font-family:var(--fm); font-size:9px; color:var(--tx2);
+    letter-spacing:.16em; text-transform:uppercase;
+  }
+
+  @media(max-width:900px){
+    #apex-testi-{{ section.id }} .at2-grid { grid-template-columns:1fr; }
+    #apex-testi-{{ section.id }} .at2-proof { flex-wrap:wrap; }
+    #apex-testi-{{ section.id }} .at2-proof-item { flex:1 1 50%; border-right:none; border-bottom:1px solid var(--border); }
+    #apex-testi-{{ section.id }} .at2-proof-item:nth-child(odd) { border-right:1px solid var(--border); }
+    #apex-testi-{{ section.id }} .at2-proof-item:nth-last-child(-n+2) { border-bottom:none; }
+    #apex-testi-{{ section.id }} .at2-inner { padding:0 28px; }
+  }
+  @media(max-width:600px){
+    #apex-testi-{{ section.id }} .at2-inner { padding:0 20px; }
+    #apex-testi-{{ section.id }} .at2-proof-item { flex:1 1 100%; border-right:none; }
+    #apex-testi-{{ section.id }} .at2-proof-item:nth-child(odd) { border-right:none; }
+  }
+</style>
+
+<section id="apex-testi-{{ section.id }}">
+  <div class="at2-bg" aria-hidden="true"></div>
+  <div class="at2-inner">
+
+    <div class="at2-header">
+      <div class="at2-tag">{{ section.settings.section_tag }}</div>
+      <h2 class="at2-h2">{{ section.settings.headline | replace: section.settings.headline_accent, '<span>' | append: '</span>' }}</h2>
+    </div>
+
+    <div class="at2-grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'testimonial' %}
+          <div class="at2-card" {{ block.shopify_attributes }}>
+            <div class="at2-card-top">// Operator Report — {{ block.settings.days_in }}</div>
+            <div class="at2-stars" aria-label="5 stars">
+              <span class="at2-star">★</span><span class="at2-star">★</span>
+              <span class="at2-star">★</span><span class="at2-star">★</span><span class="at2-star">★</span>
+            </div>
+            <blockquote class="at2-quote">{{ block.settings.quote }}</blockquote>
+            <div class="at2-author">
+              <div class="at2-av">{{ block.settings.avatar_emoji }}</div>
+              <div>
+                <div class="at2-name">{{ block.settings.name }}</div>
+                <div class="at2-handle">{{ block.settings.handle }}</div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- Proof bar -->
+    <div class="at2-proof">
+      {% for block in section.blocks %}
+        {% if block.type == 'proof_stat' %}
+          <div class="at2-proof-item" {{ block.shopify_attributes }}>
+            <span class="at2-proof-val">{{ block.settings.value }}</span>
+            <span class="at2-proof-lbl">{{ block.settings.label }}</span>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "APEX Testimonials",
+  "tag": "section",
+  "settings": [
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#0b0b0f" },
+    { "type": "color", "id": "accent_color", "label": "Accent (Gold)", "default": "#f5c542" },
+    { "type": "text", "id": "section_tag", "label": "Section Tag", "default": "Operators Speaking" },
+    { "type": "textarea", "id": "headline", "label": "Headline", "default": "Results from the field." },
+    { "type": "text", "id": "headline_accent", "label": "Words to highlight gold", "default": "the field." },
+    { "type": "range", "id": "padding_top", "min": 40, "max": 200, "step": 4, "unit": "px", "label": "Padding Top", "default": 100 },
+    { "type": "range", "id": "padding_bottom", "min": 40, "max": 200, "step": 4, "unit": "px", "label": "Padding Bottom", "default": 100 }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        { "type": "text", "id": "days_in", "label": "Days / Time In (e.g. 134 days)", "default": "134 days in" },
+        { "type": "textarea", "id": "quote", "label": "Quote (wrap key phrases in ** for bold gold highlight)", "default": "I've tried every productivity system. Nothing made me confront my own habits like APEX did. The **XP system rewired how I show up**. 134 days in, shipped 3 products, raised a pre-seed." },
+        { "type": "text", "id": "avatar_emoji", "label": "Avatar Emoji", "default": "💪" },
+        { "type": "text", "id": "name", "label": "Name", "default": "Marcus T." },
+        { "type": "text", "id": "handle", "label": "Handle / Role", "default": "// Founder · Level 8 · 134-day streak" }
+      ]
+    },
+    {
+      "type": "proof_stat",
+      "name": "Proof Stat",
+      "settings": [
+        { "type": "text", "id": "value", "label": "Value", "default": "12,400+" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Active Operators" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APEX Testimonials",
+      "blocks": [
+        { "type": "testimonial", "settings": { "days_in": "134 days in", "quote": "I've tried every productivity system. Nothing made me confront my own habits like APEX did. The XP system rewired how I show up. 134 days in, shipped 3 products, raised a pre-seed.", "avatar_emoji": "💪", "name": "Marcus T.", "handle": "// Founder · Level 8 · 134-day streak" } },
+        { "type": "testimonial", "settings": { "days_in": "89 days in", "quote": "The focus timer and the field journal together are something I've never seen in any other tool. I finished my marathon training block and closed a $400K round in the same quarter. APEX is infrastructure.", "avatar_emoji": "🚀", "name": "Priya K.", "handle": "// Founder & Athlete · Level 6 · 89-day streak" } },
+        { "type": "testimonial", "settings": { "days_in": "God Mode achieved", "quote": "Eight months. Level 10. God Mode. Not because of the badge. Because the audit trail I built over those eight months is the most honest document of my life I've ever seen.", "avatar_emoji": "🌟", "name": "Jordan L.", "handle": "// Engineer · Level 10 · God Mode" } },
+        { "type": "proof_stat", "settings": { "value": "12,400+", "label": "Active Operators" } },
+        { "type": "proof_stat", "settings": { "value": "4.2M+", "label": "Habits Completed" } },
+        { "type": "proof_stat", "settings": { "value": "98%", "label": "Report Breakthrough" } },
+        { "type": "proof_stat", "settings": { "value": "21d", "label": "Avg Streak Record" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
