@@ -205,11 +205,135 @@
         "padding_top": 100,
         "padding_bottom": 100
       }
+    },
+    "apex_tools_L4F4G7": {
+      "type": "apex-tools",
+      "blocks": {
+        "tool_PGGNHF": {
+          "type": "tool",
+          "settings": {
+            "featured": true,
+            "badge_text": "Core Asset",
+            "icon": "🔥",
+            "title": "Habit Tracker",
+            "description": "Deploy your personal habit stack. Every behavior you track earns XP and builds an audit trail you can't ignore.",
+            "features": "Custom habit icons & colors | XP yields: 10–75 per rep | Streak multipliers up to 2×"
+          }
+        },
+        "tool_hQe778": {
+          "type": "tool",
+          "settings": {
+            "featured": false,
+            "badge_text": "Core Asset",
+            "icon": "📋",
+            "title": "Daily Planner",
+            "description": "Time-slotted task ledger. Plan your mission in the morning, review your output at night. Every task earns XP.",
+            "features": "Time-stamped task slots | 10 XP per completion | Auto-sorted by time"
+          }
+        },
+        "tool_ee4ibq": {
+          "type": "tool",
+          "settings": {
+            "featured": false,
+            "badge_text": "Core Asset",
+            "icon": "✅",
+            "title": "To-Do System",
+            "description": "A structured to-do system tied to your mission briefing. Not just tasks — objectives with real consequences.",
+            "features": "Daily mission briefings | Linked to XP system | Clear / incomplete states"
+          }
+        },
+        "tool_nmBefD": {
+          "type": "tool",
+          "settings": {
+            "featured": false,
+            "badge_text": "Core Asset",
+            "icon": "⏱",
+            "title": "Focus Timer",
+            "description": "4 precision timer modes designed around peak performance science. Every completed session earns XP.",
+            "features": "25m Deep Focus | 52m Flow State | 90m Ultra Session | 5m Debrief"
+          }
+        },
+        "tool_njCgaf": {
+          "type": "tool",
+          "settings": {
+            "featured": false,
+            "badge_text": "Core Asset",
+            "icon": "🗺",
+            "title": "Business Roadmap",
+            "description": "Set your 90-day targets, break them into weekly sprints, and track real progress toward goals that matter.",
+            "features": "90-day goal system | Weekly sprint planning | Progress tracking"
+          }
+        },
+        "tool_JfdYMT": {
+          "type": "tool",
+          "settings": {
+            "featured": false,
+            "badge_text": "Core Asset",
+            "icon": "📓",
+            "title": "Field Journal",
+            "description": "A private daily journal that earns XP. Document wins, failures, and observations. Your most honest dataset.",
+            "features": "Daily entries | Per-habit notes | Mood & energy tracking"
+          }
+        },
+        "strip_stat_nxzadc": {
+          "type": "strip_stat",
+          "settings": {
+            "value": "6",
+            "label": "Core Tools"
+          }
+        },
+        "strip_stat_3LM3xA": {
+          "type": "strip_stat",
+          "settings": {
+            "value": "1",
+            "label": "Connected System"
+          }
+        },
+        "strip_stat_EQFwNT": {
+          "type": "strip_stat",
+          "settings": {
+            "value": "∞",
+            "label": "XP Compounding"
+          }
+        },
+        "strip_stat_XxXbYm": {
+          "type": "strip_stat",
+          "settings": {
+            "value": "10",
+            "label": "Rank Levels"
+          }
+        }
+      },
+      "block_order": [
+        "tool_PGGNHF",
+        "tool_hQe778",
+        "tool_ee4ibq",
+        "tool_nmBefD",
+        "tool_njCgaf",
+        "tool_JfdYMT",
+        "strip_stat_nxzadc",
+        "strip_stat_3LM3xA",
+        "strip_stat_EQFwNT",
+        "strip_stat_XxXbYm"
+      ],
+      "name": "APEX Tools",
+      "settings": {
+        "bg_color": "#0b0b0f",
+        "accent_color": "#f5c542",
+        "section_tag": "The Ledger",
+        "headline": "Every tool you need. One operating system.",
+        "headline_accent": "One operating system.",
+        "subtext": "APEX doesn't bolt on features. Every tool is part of one connected system — designed to compound your discipline, track your assets, and level up your output.",
+        "show_strip": true,
+        "padding_top": 100,
+        "padding_bottom": 100
+      }
     }
   },
   "order": [
     "apex_hero_XC4PbB",
     "apex_problem_AF4ffM",
-    "apex_how_it_works_BeE66K"
+    "apex_how_it_works_BeE66K",
+    "apex_tools_L4F4G7"
   ]
 }
