@@ -71,6 +71,15 @@
 }
 
 .apex-page {
+  background: var(--k);
+  color: var(--tx);
+  font-family: var(--fm);
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  cursor: none;
+}
+
 @media (pointer: fine) {
   body { cursor: none; }
   input, button, a, select, textarea { cursor: none; }
@@ -81,13 +90,6 @@
   input, button, a, select, textarea { cursor: auto; }
   #cur, #cur2 { display: none !important; }
 }
-
-.apex-page ::selection { background: var(--acid); color: var(--k); }
-.apex-page ::-webkit-scrollbar { width: 2px; }
-.apex-page ::-webkit-scrollbar-track { background: var(--k); }
-.apex-page ::-webkit-scrollbar-thumb { background: var(--acid); }
-.apex-page a, .apex-page button, .apex-page input,
-.apex-page select, .apex-page textarea { cursor: none; outline: none; }
 
 /* ── CURSOR ────────────────────────────────── */
 .apex-page #apex-cur {
