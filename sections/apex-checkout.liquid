@@ -1,0 +1,1238 @@
+{% comment %}
+  APEX — Checkout Section
+  File: sections/apex-checkout.liquid
+
+  WHAT THIS SECTION DOES:
+  ─────────────────────────────────────────────────────────────────
+  Renders a full-page premium checkout experience that:
+  1. Shows the selected plan (passed via URL param ?plan=operator|apex_class|free)
+  2. Displays an order summary with the plan details
+  3. Collects name + email + optional company
+  4. Has a billing toggle (monthly / annual) with live price switching
+  5. Connects to Shopify's native checkout via product variant IDs
+  6. Falls back to a Stripe Checkout link if using Stripe directly
+  7. Includes trust signals, guarantee badge, and animated effects
+
+  INSTALL:
+  ─────────────────────────────────────────────────────────────────
+  1. Edit Code → Sections → Add new section → name: apex-checkout
+  2. Paste this file → Save
+  3. Create a new Page in Shopify Admin, assign template or add this section
+  4. Link your CTA buttons to /pages/checkout?plan=operator
+     or /pages/checkout?plan=apex_class
+
+  SHOPIFY PRODUCT SETUP:
+  ─────────────────────────────────────────────────────────────────
+  Create two products in your Shopify store:
+  - "APEX Operator" with two variants: Monthly ($12) and Annual ($84)
+  - "APEX Apex Class" with two variants: Monthly ($29) and Annual ($204)
+  Enter the variant IDs in the schema settings below.
+  ─────────────────────────────────────────────────────────────────
+{% endcomment %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+
+<style>
+/* ═══════════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════════ */
+#apxco-{{ section.id }} {
+  --k:    {{ section.settings.bg_color }};
+  --k2:   #141410;
+  --k3:   #1e1e1a;
+  --k4:   #2a2a24;
+  --k5:   #2e2e28;
+  --acid: {{ section.settings.accent_color }};
+  --acid2:#bbec00;
+  --a1:   rgba(212,255,0,.14);
+  --a2:   rgba(212,255,0,.07);
+  --a3:   rgba(212,255,0,.04);
+  --red:  #ff4444;
+  --green:#00d96e;
+  --dim:  rgba(240,240,235,.10);
+  --dim2: rgba(240,240,235,.06);
+  --tx:   #f0f0eb;
+  --tx2:  #8a8a7e;
+  --tx3:  #5a5a50;
+  --fd:   'Bebas Neue', sans-serif;
+  --fm:   'IBM Plex Mono', monospace;
+  --fs:   'DM Serif Display', serif;
+}
+
+#apxco-{{ section.id }},
+#apxco-{{ section.id }} *,
+#apxco-{{ section.id }} *::before,
+#apxco-{{ section.id }} *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+}
+
+#apxco-{{ section.id }} {
+  background: var(--k);
+  color: var(--tx);
+  font-family: var(--fm);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════
+   BACKGROUND GRID
+═══════════════════════════════════════════════════ */
+#apxco-{{ section.id }} .co-grid {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(212,255,0,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212,255,0,.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+}
+#apxco-{{ section.id }} .co-glow {
+  position: absolute; pointer-events: none; z-index: 0;
+  width: 700px; height: 700px;
+  top: -100px; right: -200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,255,0,.04) 0%, transparent 65%);
+  animation: co-glow-drift 14s ease-in-out infinite alternate;
+}
+@keyframes co-glow-drift {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(-40px, 60px) scale(1.15); }
+}
+
+/* ═══════════════════════════════════════════════════
+   TOP NAV BAR
+═══════════════════════════════════════════════════ */
+#apxco-{{ section.id }} .co-nav {
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  border-bottom: 1px solid var(--dim);
+  background: rgba(10,10,8,.9);
+  backdrop-filter: blur(20px);
+  position: relative; z-index: 10;
+}
+#apxco-{{ section.id }} .co-nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+#apxco-{{ section.id }} .co-nav-a {
+  font-family: var(--fd); font-size: 26px;
+  color: var(--acid); letter-spacing: .04em; line-height: 1;
+}
+#apxco-{{ section.id }} .co-nav-slash { color: var(--tx3); font-size: 16px; }
+#apxco-{{ section.id }} .co-nav-tag {
+  font-family: var(--fm); font-size: 9px; color: var(--tx2);
+  letter-spacing: .18em; text-transform: uppercase;
+}
+#apxco-{{ section.id }} .co-nav-secure {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--fm); font-size: 10px; color: var(--tx3);
+  letter-spacing: .12em; text-transform: uppercase;
+}
+#apxco-{{ section.id }} .co-nav-secure-icon {
+  font-size: 14px; color: var(--green);
+}
+#apxco-{{ section.id }} .co-nav-back {
+  font-family: var(--fm); font-size: 10px; color: var(--tx2);
+  letter-spacing: .1em; text-decoration: none; text-transform: uppercase;
+  display: flex; align-items: center; gap: 6px;
+  transition: color .2s;
+}
+#apxco-{{ section.id }} .co-nav-back:hover { color: var(--acid); }
+
+/* ═══════════════════════════════════════════════════
+   MAIN LAYOUT — split left / right
+═══════════════════════════════════════════════════ */
+#apxco-{{ section.id }} .co-body {
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  min-height: calc(100vh - 60px);
+  position: relative; z-index: 1;
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+/* ─── LEFT — form side ─── */
+#apxco-{{ section.id }} .co-left {
+  padding: 52px 56px 80px 48px;
+  border-right: 1px solid var(--dim);
+}
+
+/* ─── RIGHT — order summary ─── */
+#apxco-{{ section.id }} .co-right {
+  padding: 52px 48px 80px;
+  background: var(--k2);
+}
+
+/* ═══════════════════════════════════════════════════
+   SECTION LABELS
+═══════════════════════════════════════════════════ */
+#apxco-{{ section.id }} .co-step-label {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--fm); font-size: 9px; letter-spacing: .24em;
+  color: var(--tx3); text-transform: uppercase; margin-bottom: 22px;
+}
+#apxco-{{ section.id }} .co-step-label::before {
+  content: ''; width: 16px; height: 1px; background: var(--acid); flex-shrink: 0;
+}
+#apxco-{{ section.id }} .co-step-num {
+  font-family: var(--fd); font-size: 16px; color: var(--acid); line-height: 1;
+}
+
+/* ═══════════════════════════════════════════════════
+   BILLING TOGGLE
+═══════════════════════════════════════════════════ */
+#apxco-{{ section.id }} .co-billing-wrap {
+  display: flex; align-items: center; gap: 0;
+  border: 1px solid var(--dim); margin-bottom: 32px; overflow: hidden;
+}
+#apxco-{{ section.id }} .co-bill-opt {
+  flex: 1; padding: 12px 16px;
+  font-family: var(--fm); font-size: 10px; letter-spacing: .1em;
+  color: var(--tx2); text-align: center; text-transform: uppercase;
+  background: none; border: none;
+  cursor: pointer; transition: all .25s; position: relative;
+}
+#apxco-{{ section.id }} .co-bill-opt::after {
+  content: ''; position: absolute; top: 0; inset-x: 0; height: 2px;
+  background: var(--acid); opacity: 0; transition: opacity .25s;
+}
+#apxco-{{ section.id }} .co-bill-opt.on {
+  color: var(--acid); background: var(--a2);
+}
+#apxco-{{ section.id }} .co-bill-opt.on::after { opacity: 1; }
+#apxco-{{ section.id }} .co-bill-divider {
+  width: 1px; height: 44px; background: var(--dim); flex-shrink: 0;
+}
+#apxco-{{ section.id }} .co-save-pill {
+  display: inline-block;
+  font-family: var(--fm); font-size: 8px; letter-spacing: .1em;
+  color: var(--k); background: var(--acid);
+  padding: 2px 7px; margin-left: 6px; text-transform: uppercase; vertical-align: middle;
+}
+
+/* ═══════════════════════════════════════════════════
+   FORM FIELDS
+═══════════════════════════════════════════════════ */
+#apxco-{{ section.id }} .co-field-group {
+  display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;
+}
+#apxco-{{ section.id }} .co-field-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 0;
+}
+#apxco-{{ section.id }} .co-label {
+  font-family: var(--fm); font-size: 9px; letter-spacing: .18em;
+  color: var(--tx3); text-transform: uppercase;
+}
+#apxco-{{ section.id }} .co-input {
+  width: 100%;
+  background: var(--k3);
+  border: 1px solid var(--dim);
+  padding: 13px 16px;
+  color: var(--tx);
+  font-family: var(--fm); font-size: 12px; letter-spacing: .05em;
+  transition: border-color .25s, background .25s;
+  border-radius: 0; outline: none;
+  -webkit-appearance: none; appearance: none;
+}
+#apxco-{{ section.id }} .co-input::placeholder { color: var(--tx3); }
+#apxco-{{ section.id }} .co-input:focus {
+  border-color: var(--acid); background: rgba(30,30,26,.8);
+  box-shadow: 0 0 0 1px var(--a1) inset;
+}
+#apxco-{{ section.id }} .co-input.error {
+  border-color: var(--red);
+  box-shadow: 0 0 0 1px rgba(255,68,68,.18) inset;
+}
+#apxco-{{ section.id }} .co-field-error {
+  font-family: var(--fm); font-size: 10px; color: var(--red);
+  letter-spacing: .06em; display: none;
+}
+#apxco-{{ section.id }} .co-field-error.on { display: block; }
+
+/* Stripe card mount target */
+#apxco-{{ section.id }} .co-card-mount {
+  background: var(--k3); border: 1px solid var(--dim);
+  padding: 13px 16px; min-height: 44px;
+  transition: border-color .25s;
+}
+#apxco-{{ section.id }} .co-card-mount.focused { border-color: var(--acid); }
+#apxco-{{ section.id }} .co-card-mock {
+  display: flex; align-items: center; gap: 12px;
+}
+#apxco-{{ section.id }} .co-card-icon { font-size: 18px; color: var(--tx3); }
+#apxco-{{ section.id }} .co-card-hint {
+  font-family: var(--fm); font-size: 11px; color: var(--tx3); letter-spacing: .06em;
+}
+
+/* Section divider */
+#apxco-{{ section.id }} .co-divider {
+  height: 1px; background: var(--dim); margin: 28px 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   SUBMIT BUTTON
+═══════════════════════════════════════════════════ */
+#apxco-{{ section.id }} .co-submit-wrap { margin-top: 32px; }
+#apxco-{{ section.id }} .co-submit {
+  width: 100%; padding: 18px 24px;
+  background: var(--acid); color: var(--k);
+  font-family: var(--fd); font-size: 24px; letter-spacing: .07em; line-height: 1;
+  border: none; cursor: pointer;
+  position: relative; overflow: hidden;
+  transition: background .25s, box-shadow .25s, transform .2s;
+}
+#apxco-{{ section.id }} .co-submit::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.14), transparent);
+  pointer-events: none;
+}
+#apxco-{{ section.id }} .co-submit::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.12) 50%, transparent 100%);
+  transform: translateX(-100%);
+  transition: transform .5s ease;
+  pointer-events: none;
+}
+#apxco-{{ section.id }} .co-submit:hover::after { transform: translateX(100%); }
+#apxco-{{ section.id }} .co-submit:hover {
+  background: #e8ff26;
+  box-shadow: 0 8px 40px rgba(212,255,0,.28);
+  transform: translateY(-1px);
+}
+#apxco-{{ section.id }} .co-submit:active { transform: translateY(0) scale(.99); }
+#apxco-{{ section.id }} .co-submit.loading {
+  opacity: .7; pointer-events: none;
+}
+#apxco-{{ section.id }} .co-submit-sub {
+  text-align: center; margin-top: 12px;
+  font-family: var(--fm); font-size: 10px; color: var(--tx3); letter-spacing: .1em;
+}
+#apxco-{{ section.id }} .co-submit-sub a { color: var(--acid); text-decoration: none; }
+
+/* ═══════════════════════════════════════════════════
+   TRUST ROW
+═══════════════════════════════════════════════════ */
+#apxco-{{ section.id }} .co-trust {
+  display: flex; align-items: center; justify-content: center;
+  gap: 20px; flex-wrap: wrap; margin-top: 28px; padding-top: 24px;
+  border-top: 1px solid var(--dim);
+}
+#apxco-{{ section.id }} .co-trust-item {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--fm); font-size: 9px; color: var(--tx3);
+  letter-spacing: .12em; text-transform: uppercase;
+}
+#apxco-{{ section.id }} .co-trust-icon { font-size: 12px; color: var(--green); }
+#apxco-{{ section.id }} .co-trust-sep { width: 1px; height: 12px; background: var(--dim); }
+
+/* ═══════════════════════════════════════════════════
+   ORDER SUMMARY (right panel)
+═══════════════════════════════════════════════════ */
+#apxco-{{ section.id }} .co-summary-title {
+  font-family: var(--fd); font-size: 28px; letter-spacing: .06em;
+  color: var(--tx); line-height: 1; margin-bottom: 24px;
+}
+
+/* Plan card */
+#apxco-{{ section.id }} .co-plan-card {
+  border: 1px solid rgba(212,255,0,.28);
+  background: var(--a3);
+  padding: 22px 20px; margin-bottom: 24px;
+  position: relative; overflow: hidden;
+}
+#apxco-{{ section.id }} .co-plan-card::before {
+  content: ''; position: absolute; top: 0; inset-x: 0; height: 2px;
+  background: linear-gradient(90deg, var(--acid), transparent);
+}
+#apxco-{{ section.id }} .co-plan-tier {
+  font-family: var(--fm); font-size: 9px; letter-spacing: .22em;
+  color: var(--acid); text-transform: uppercase; margin-bottom: 6px;
+}
+#apxco-{{ section.id }} .co-plan-name {
+  font-family: var(--fd); font-size: 28px; color: var(--tx);
+  letter-spacing: .04em; line-height: 1; margin-bottom: 10px;
+}
+#apxco-{{ section.id }} .co-plan-price-row {
+  display: flex; align-items: baseline; gap: 4px;
+}
+#apxco-{{ section.id }} .co-plan-price-cur {
+  font-family: var(--fm); font-size: 16px; color: var(--tx2);
+}
+#apxco-{{ section.id }} .co-plan-price-num {
+  font-family: var(--fd); font-size: 48px; color: var(--acid);
+  letter-spacing: -.02em; line-height: 1;
+  transition: all .3s ease;
+}
+#apxco-{{ section.id }} .co-plan-price-per {
+  font-family: var(--fm); font-size: 10px; color: var(--tx3);
+  letter-spacing: .06em; align-self: flex-end; padding-bottom: 6px;
+  transition: all .3s ease;
+}
+
+/* Features list inside summary */
+#apxco-{{ section.id }} .co-feat-list {
+  list-style: none; margin-bottom: 24px;
+  border-top: 1px solid var(--dim);
+}
+#apxco-{{ section.id }} .co-feat {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0; border-bottom: 1px solid var(--dim);
+  font-family: var(--fm); font-size: 10px; color: var(--tx2); letter-spacing: .04em;
+}
+#apxco-{{ section.id }} .co-feat-ic { color: var(--acid); font-size: 11px; flex-shrink: 0; }
+
+/* Subtotal rows */
+#apxco-{{ section.id }} .co-line {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 0; border-bottom: 1px solid var(--dim);
+  font-family: var(--fm); font-size: 11px; color: var(--tx2); letter-spacing: .04em;
+}
+#apxco-{{ section.id }} .co-line:last-of-type { border-bottom: none; }
+#apxco-{{ section.id }} .co-line-val { color: var(--tx); }
+#apxco-{{ section.id }} .co-line-val.acid { color: var(--acid); }
+
+/* Total row */
+#apxco-{{ section.id }} .co-total-row {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  padding: 20px 0; border-top: 1px solid var(--dim2);
+  margin-top: 4px;
+}
+#apxco-{{ section.id }} .co-total-lbl {
+  font-family: var(--fd); font-size: 18px; letter-spacing: .08em; color: var(--tx2);
+}
+#apxco-{{ section.id }} .co-total-val {
+  font-family: var(--fd); font-size: 36px; color: var(--acid);
+  letter-spacing: -.01em; line-height: 1;
+  transition: all .3s ease;
+}
+
+/* Guarantee badge */
+#apxco-{{ section.id }} .co-guarantee {
+  border: 1px solid var(--dim);
+  border-left: 2px solid var(--acid);
+  padding: 16px 18px; margin-top: 24px;
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--a3);
+}
+#apxco-{{ section.id }} .co-guarantee-icon { font-size: 22px; flex-shrink: 0; line-height: 1; margin-top: 2px; }
+#apxco-{{ section.id }} .co-guarantee-title {
+  font-family: var(--fd); font-size: 16px; letter-spacing: .06em;
+  color: var(--tx); line-height: 1; margin-bottom: 5px;
+}
+#apxco-{{ section.id }} .co-guarantee-text {
+  font-family: var(--fm); font-size: 10px; color: var(--tx2);
+  line-height: 1.75; letter-spacing: .03em;
+}
+
+/* Stripe logos row */
+#apxco-{{ section.id }} .co-stripe-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 20px; flex-wrap: wrap;
+}
+#apxco-{{ section.id }} .co-stripe-lbl {
+  font-family: var(--fm); font-size: 9px; color: var(--tx3);
+  letter-spacing: .14em; text-transform: uppercase;
+}
+#apxco-{{ section.id }} .co-card-logos {
+  display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+}
+#apxco-{{ section.id }} .co-card-logo {
+  font-family: var(--fm); font-size: 9px; padding: 3px 8px;
+  border: 1px solid var(--dim); color: var(--tx3); letter-spacing: .06em;
+  background: var(--k3);
+}
+
+/* ═══════════════════════════════════════════════════
+   SUCCESS STATE
+═══════════════════════════════════════════════════ */
+#apxco-{{ section.id }} .co-success {
+  display: none; text-align: center;
+  padding: 60px 40px; animation: co-fadeup .8s both;
+}
+#apxco-{{ section.id }} .co-success.on { display: block; }
+#apxco-{{ section.id }} .co-success-icon {
+  font-size: 56px; margin-bottom: 16px; line-height: 1;
+}
+#apxco-{{ section.id }} .co-success-h {
+  font-family: var(--fd); font-size: clamp(36px, 5vw, 60px);
+  color: var(--acid); letter-spacing: .04em; line-height: 1; margin-bottom: 12px;
+}
+#apxco-{{ section.id }} .co-success-sub {
+  font-family: var(--fm); font-size: 12px; color: var(--tx2);
+  line-height: 1.9; max-width: 440px; margin: 0 auto 32px; letter-spacing: .03em;
+}
+#apxco-{{ section.id }} .co-success-btn {
+  display: inline-block; padding: 14px 36px;
+  background: var(--acid); color: var(--k);
+  font-family: var(--fd); font-size: 20px; letter-spacing: .08em; line-height: 1;
+  text-decoration: none; border: none; cursor: pointer; transition: all .25s;
+}
+#apxco-{{ section.id }} .co-success-btn:hover { background: #e8ff26; transform: translateY(-2px); }
+
+/* ═══════════════════════════════════════════════════
+   XP BADGE (decorative, top of form)
+═══════════════════════════════════════════════════ */
+#apxco-{{ section.id }} .co-xp-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--fm); font-size: 10px; letter-spacing: .22em;
+  color: var(--acid); text-transform: uppercase;
+  padding: 7px 16px; background: var(--a2);
+  border: 1px solid rgba(212,255,0,.22);
+  margin-bottom: 24px;
+}
+#apxco-{{ section.id }} .co-xp-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--acid);
+  box-shadow: 0 0 6px var(--acid);
+  animation: co-blink 1.6s ease-in-out infinite;
+}
+@keyframes co-blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.7)} }
+
+/* ═══════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════ */
+@keyframes co-fadeup {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#apxco-{{ section.id }} .co-animate {
+  opacity: 0; transform: translateY(20px);
+  animation: co-fadeup .7s both;
+}
+#apxco-{{ section.id }} .co-animate:nth-child(2) { animation-delay: .08s; }
+#apxco-{{ section.id }} .co-animate:nth-child(3) { animation-delay: .16s; }
+#apxco-{{ section.id }} .co-animate:nth-child(4) { animation-delay: .24s; }
+#apxco-{{ section.id }} .co-animate:nth-child(5) { animation-delay: .32s; }
+#apxco-{{ section.id }} .co-animate:nth-child(6) { animation-delay: .40s; }
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════ */
+@media(max-width:900px){
+  #apxco-{{ section.id }} .co-body {
+    grid-template-columns: 1fr;
+  }
+  #apxco-{{ section.id }} .co-right {
+    border-top: 1px solid var(--dim);
+    border-right: none;
+    order: -1; /* summary first on mobile */
+    padding: 32px 24px;
+  }
+  #apxco-{{ section.id }} .co-left {
+    padding: 32px 24px 60px;
+    border-right: none;
+  }
+  #apxco-{{ section.id }} .co-field-row {
+    grid-template-columns: 1fr;
+  }
+  #apxco-{{ section.id }} .co-nav { padding: 0 20px; }
+  #apxco-{{ section.id }} .co-nav-tag { display: none; }
+}
+@media(max-width:480px){
+  #apxco-{{ section.id }} .co-trust { gap: 10px; }
+  #apxco-{{ section.id }} .co-trust-sep { display: none; }
+}
+</style>
+
+<section id="apxco-{{ section.id }}">
+
+  <!-- Background -->
+  <div class="co-grid" aria-hidden="true"></div>
+  <div class="co-glow" aria-hidden="true"></div>
+
+  <!-- Top Nav -->
+  <nav class="co-nav" aria-label="Checkout navigation">
+    <a class="co-nav-logo" href="{{ routes.root_url }}">
+      <span class="co-nav-a">APEX</span>
+      <span class="co-nav-slash">/</span>
+      <span class="co-nav-tag">The Discipline Audit</span>
+    </a>
+    <div class="co-nav-secure" aria-label="Secure checkout">
+      <span class="co-nav-secure-icon">🔒</span>
+      Secure Checkout
+    </div>
+    <a class="co-nav-back" href="{{ routes.root_url }}">
+      ← Back
+    </a>
+  </nav>
+
+  <!-- Main body -->
+  <div class="co-body">
+
+    <!-- ════════════════════════════
+         LEFT — FORM
+    ════════════════════════════ -->
+    <div class="co-left">
+
+      <!-- XP live badge -->
+      <div class="co-xp-badge co-animate" aria-hidden="true">
+        <div class="co-xp-dot"></div>
+        Founding Access · Limited Spots
+      </div>
+
+      <!-- Billing toggle -->
+      <div class="co-step-label co-animate">
+        <span class="co-step-num">01</span>
+        Choose Your Billing Cycle
+      </div>
+      <div class="co-billing-wrap co-animate" role="group" aria-label="Billing cycle">
+        <button
+          class="co-bill-opt on"
+          id="co-bill-mo-{{ section.id }}"
+          onclick="coSetBilling('monthly','{{ section.id }}')"
+          aria-pressed="true"
+        >
+          Monthly
+        </button>
+        <div class="co-bill-divider" aria-hidden="true"></div>
+        <button
+          class="co-bill-opt"
+          id="co-bill-an-{{ section.id }}"
+          onclick="coSetBilling('annual','{{ section.id }}')"
+          aria-pressed="false"
+        >
+          Annual <span class="co-save-pill">Save 40%</span>
+        </button>
+      </div>
+
+      <!-- Contact info -->
+      <div class="co-step-label co-animate">
+        <span class="co-step-num">02</span>
+        Your Information
+      </div>
+
+      <form id="co-form-{{ section.id }}" novalidate>
+
+        <div class="co-field-row co-animate">
+          <div class="co-field-group">
+            <label class="co-label" for="co-fname-{{ section.id }}">First Name</label>
+            <input
+              class="co-input"
+              id="co-fname-{{ section.id }}"
+              type="text"
+              name="first_name"
+              placeholder="Marcus"
+              autocomplete="given-name"
+              required
+            />
+            <span class="co-field-error" id="co-fname-err-{{ section.id }}">First name required</span>
+          </div>
+          <div class="co-field-group">
+            <label class="co-label" for="co-lname-{{ section.id }}">Last Name</label>
+            <input
+              class="co-input"
+              id="co-lname-{{ section.id }}"
+              type="text"
+              name="last_name"
+              placeholder="Thorn"
+              autocomplete="family-name"
+              required
+            />
+            <span class="co-field-error" id="co-lname-err-{{ section.id }}">Last name required</span>
+          </div>
+        </div>
+
+        <div class="co-field-group co-animate">
+          <label class="co-label" for="co-email-{{ section.id }}">Email Address</label>
+          <input
+            class="co-input"
+            id="co-email-{{ section.id }}"
+            type="email"
+            name="email"
+            placeholder="you@yourdomain.com"
+            autocomplete="email"
+            required
+          />
+          <span class="co-field-error" id="co-email-err-{{ section.id }}">Valid email required</span>
+        </div>
+
+        <div class="co-field-group co-animate">
+          <label class="co-label" for="co-company-{{ section.id }}">
+            Company / Project
+            <span style="color:var(--tx3);margin-left:6px;letter-spacing:.08em;font-size:8px">OPTIONAL</span>
+          </label>
+          <input
+            class="co-input"
+            id="co-company-{{ section.id }}"
+            type="text"
+            name="company"
+            placeholder="Your startup, brand, or project"
+            autocomplete="organization"
+          />
+        </div>
+
+        <div class="co-divider"></div>
+
+        <!-- Payment section -->
+        <div class="co-step-label co-animate">
+          <span class="co-step-num">03</span>
+          Payment
+        </div>
+
+        <!-- Stripe card mount OR Shopify checkout redirect -->
+        <div class="co-animate">
+          {% if section.settings.use_stripe %}
+            <!-- Stripe Elements mount point -->
+            <div class="co-field-group">
+              <label class="co-label">Card Details</label>
+              <div class="co-card-mount" id="co-stripe-card-{{ section.id }}">
+                <!-- Stripe Elements injects here -->
+                <div class="co-card-mock">
+                  <span class="co-card-icon">💳</span>
+                  <span class="co-card-hint">Card number · MM/YY · CVC</span>
+                </div>
+              </div>
+              <span class="co-field-error" id="co-card-err-{{ section.id }}"></span>
+            </div>
+          {% else %}
+            <!-- Shopify native checkout — form submits to cart + redirect -->
+            <div class="co-card-mount" style="display:flex;align-items:center;gap:12px;padding:16px">
+              <span style="font-size:20px">🏪</span>
+              <span style="font-family:var(--fm);font-size:11px;color:var(--tx2);letter-spacing:.04em;line-height:1.6">
+                Clicking <strong style="color:var(--tx)">COMPLETE YOUR AUDIT</strong> below will redirect you to<br>
+                Shopify's secure checkout to complete payment.
+              </span>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Submit -->
+        <div class="co-submit-wrap co-animate">
+          <button
+            class="co-submit"
+            type="submit"
+            id="co-submit-{{ section.id }}"
+            aria-label="Complete your APEX audit subscription"
+          >
+            COMPLETE YOUR AUDIT →
+          </button>
+          <div class="co-submit-sub">
+            By continuing you agree to our
+            <a href="{{ pages['terms-of-service'].url | default: '#' }}">Terms</a>
+            &amp;
+            <a href="{{ pages['privacy-policy'].url | default: '#' }}">Privacy Policy</a>
+          </div>
+        </div>
+
+        <!-- Trust signals -->
+        <div class="co-trust co-animate">
+          <div class="co-trust-item">
+            <span class="co-trust-icon">🔒</span>
+            SSL Encrypted
+          </div>
+          <div class="co-trust-sep"></div>
+          <div class="co-trust-item">
+            <span class="co-trust-icon">✓</span>
+            Cancel Anytime
+          </div>
+          <div class="co-trust-sep"></div>
+          <div class="co-trust-item">
+            <span class="co-trust-icon">✓</span>
+            30-Day Refund
+          </div>
+          <div class="co-trust-sep"></div>
+          <div class="co-trust-item">
+            <span class="co-trust-icon">✓</span>
+            No Hidden Fees
+          </div>
+        </div>
+
+      </form>
+
+      <!-- Success overlay (replaces form on completion) -->
+      <div class="co-success" id="co-success-{{ section.id }}" role="status" aria-live="polite">
+        <div class="co-success-icon">⚡</div>
+        <div class="co-success-h">AUDIT OPEN.<br>YOU'RE IN.</div>
+        <p class="co-success-sub">
+          Check your inbox — your account confirmation and founding operator details are on the way.
+          Your 50% founding discount is locked. Welcome to the movement.
+        </p>
+        <a class="co-success-btn" href="{{ section.settings.app_url | default: routes.root_url }}">
+          OPEN YOUR AUDIT →
+        </a>
+      </div>
+
+    </div><!-- /.co-left -->
+
+
+    <!-- ════════════════════════════
+         RIGHT — ORDER SUMMARY
+    ════════════════════════════ -->
+    <div class="co-right">
+
+      <div class="co-summary-title">Order Summary</div>
+
+      <!-- Plan card — updates via JS -->
+      <div class="co-plan-card" id="co-plan-card-{{ section.id }}">
+        <div class="co-plan-tier" id="co-plan-tier-{{ section.id }}">Tier 02</div>
+        <div class="co-plan-name" id="co-plan-name-{{ section.id }}">OPERATOR</div>
+        <div class="co-plan-price-row">
+          <span class="co-plan-price-cur">$</span>
+          <span class="co-plan-price-num" id="co-plan-price-{{ section.id }}">{{ section.settings.price_op_mo }}</span>
+          <span class="co-plan-price-per" id="co-plan-per-{{ section.id }}">/mo</span>
+        </div>
+      </div>
+
+      <!-- Feature list — updates via JS -->
+      <ul class="co-feat-list" id="co-feat-list-{{ section.id }}">
+        <li class="co-feat"><span class="co-feat-ic">+</span>Unlimited habit assets</li>
+        <li class="co-feat"><span class="co-feat-ic">+</span>Full XP &amp; 10-rank system</li>
+        <li class="co-feat"><span class="co-feat-ic">+</span>XP multipliers on streaks</li>
+        <li class="co-feat"><span class="co-feat-ic">+</span>All 4 war room timer modes</li>
+        <li class="co-feat"><span class="co-feat-ic">+</span>28-day audit trail &amp; heatmap</li>
+        <li class="co-feat"><span class="co-feat-ic">+</span>Field journal + habit notes</li>
+        <li class="co-feat"><span class="co-feat-ic">+</span>Global leaderboard access</li>
+        <li class="co-feat"><span class="co-feat-ic">+</span>Operator Discord</li>
+      </ul>
+
+      <!-- Subtotal rows -->
+      <div class="co-line">
+        <span id="co-subtotal-lbl-{{ section.id }}">Operator · Monthly</span>
+        <span class="co-line-val" id="co-subtotal-val-{{ section.id }}">${{ section.settings.price_op_mo }}/mo</span>
+      </div>
+      <div class="co-line">
+        <span>Founding Discount</span>
+        <span class="co-line-val acid" id="co-discount-{{ section.id }}">—</span>
+      </div>
+      <div class="co-line">
+        <span>Setup Fee</span>
+        <span class="co-line-val acid">Free</span>
+      </div>
+
+      <!-- Total -->
+      <div class="co-total-row">
+        <span class="co-total-lbl">Total Today</span>
+        <span class="co-total-val" id="co-total-{{ section.id }}">${{ section.settings.price_op_mo }}</span>
+      </div>
+
+      <!-- 30-day guarantee -->
+      <div class="co-guarantee">
+        <div class="co-guarantee-icon">🛡</div>
+        <div>
+          <div class="co-guarantee-title">30-DAY GUARANTEE</div>
+          <div class="co-guarantee-text">
+            If APEX doesn't deliver value in the first 30 days, we'll refund you completely.
+            No forms. No questions. No dark patterns.
+          </div>
+        </div>
+      </div>
+
+      <!-- Stripe / payment logos -->
+      <div class="co-stripe-row">
+        <span class="co-stripe-lbl">Secured by</span>
+        <div class="co-card-logos">
+          <span class="co-card-logo">Stripe</span>
+          <span class="co-card-logo">Visa</span>
+          <span class="co-card-logo">MC</span>
+          <span class="co-card-logo">Amex</span>
+          <span class="co-card-logo">PayPal</span>
+        </div>
+      </div>
+
+    </div><!-- /.co-right -->
+  </div><!-- /.co-body -->
+
+</section>
+
+<script>
+(function() {
+'use strict';
+
+var SID = '{{ section.id }}';
+
+/* ── Plan data from schema ─────────────────── */
+var PLANS = {
+  operator: {
+    tier:     'Tier 02',
+    name:     'OPERATOR',
+    mo:       '{{ section.settings.price_op_mo }}',
+    ann:      '{{ section.settings.price_op_ann }}',
+    yrTotal:  '{{ section.settings.price_op_yr }}',
+    variantMo:  '{{ section.settings.variant_op_mo }}',
+    variantAnn: '{{ section.settings.variant_op_ann }}',
+    checkoutMo:  '{{ section.settings.checkout_url_op_mo }}',
+    checkoutAnn: '{{ section.settings.checkout_url_op_ann }}',
+    feats: [
+      'Unlimited habit assets',
+      'Full XP &amp; 10-rank system',
+      'XP multipliers on streaks',
+      'All 4 war room timer modes',
+      '28-day audit trail &amp; heatmap',
+      'Field journal + habit notes',
+      'Global leaderboard access',
+      'Operator Discord'
+    ]
+  },
+  apex_class: {
+    tier:     'Tier 03',
+    name:     'APEX CLASS',
+    mo:       '{{ section.settings.price_ap_mo }}',
+    ann:      '{{ section.settings.price_ap_ann }}',
+    yrTotal:  '{{ section.settings.price_ap_yr }}',
+    variantMo:  '{{ section.settings.variant_ap_mo }}',
+    variantAnn: '{{ section.settings.variant_ap_ann }}',
+    checkoutMo:  '{{ section.settings.checkout_url_ap_mo }}',
+    checkoutAnn: '{{ section.settings.checkout_url_ap_ann }}',
+    feats: [
+      'Everything in Operator',
+      '1-on-1 accountability pairing',
+      'Private Apex Class Discord',
+      'Weekly group debrief calls',
+      'Custom audit programs',
+      'Early access to all features',
+      'APEX gear drops',
+      'Direct founder access'
+    ]
+  }
+};
+
+/* ── Read plan from URL param ──────────────── */
+function getParam(key) {
+  var params = new URLSearchParams(window.location.search);
+  return params.get(key) || 'operator';
+}
+
+var currentPlan    = getParam('plan');
+var currentBilling = 'monthly';
+
+if (!PLANS[currentPlan]) currentPlan = 'operator';
+
+/* ── DOM refs ──────────────────────────────── */
+function el(id) { return document.getElementById(id + '-' + SID); }
+
+var domTier        = el('co-plan-tier');
+var domName        = el('co-plan-name');
+var domPrice       = el('co-plan-price');
+var domPer         = el('co-plan-per');
+var domFeatList    = el('co-feat-list');
+var domSubtotalLbl = el('co-subtotal-lbl');
+var domSubtotalVal = el('co-subtotal-val');
+var domDiscount    = el('co-discount');
+var domTotal       = el('co-total');
+var domBillMo      = el('co-bill-mo');
+var domBillAn      = el('co-bill-an');
+var domSubmit      = el('co-submit');
+var domForm        = el('co-form');
+var domSuccess     = el('co-success');
+
+/* ── Render summary panel ──────────────────── */
+function renderSummary() {
+  var p = PLANS[currentPlan];
+  var isAnn = currentBilling === 'annual';
+
+  domTier.textContent = p.tier;
+  domName.textContent = p.name;
+  domPrice.textContent = isAnn ? p.ann : p.mo;
+  domPer.textContent   = isAnn ? '/mo · billed annually' : '/mo';
+
+  /* Feature list */
+  domFeatList.innerHTML = p.feats.map(function(f) {
+    return '<li class="co-feat"><span class="co-feat-ic">+</span>' + f + '</li>';
+  }).join('');
+
+  /* Subtotal */
+  var priceLabel = p.name + ' · ' + (isAnn ? 'Annual' : 'Monthly');
+  var priceVal   = isAnn ? ('$' + p.ann + '/mo') : ('$' + p.mo + '/mo');
+  var totalVal   = isAnn ? ('$' + p.yrTotal + '/yr') : ('$' + p.mo + '/mo');
+  domSubtotalLbl.textContent = priceLabel;
+  domSubtotalVal.textContent = priceVal;
+  domTotal.textContent       = totalVal;
+
+  /* Discount — show founding note on annual */
+  if (isAnn) {
+    domDiscount.textContent = 'Annual rate applied';
+    domDiscount.style.color = 'var(--acid)';
+  } else {
+    domDiscount.textContent = '—';
+    domDiscount.style.color = '';
+  }
+}
+
+/* ── Billing toggle ────────────────────────── */
+window['coSetBilling'] = function(mode, sid) {
+  if (sid !== SID) return;
+  currentBilling = mode;
+  domBillMo.classList.toggle('on', mode === 'monthly');
+  domBillAn.classList.toggle('on', mode === 'annual');
+  domBillMo.setAttribute('aria-pressed', mode === 'monthly' ? 'true' : 'false');
+  domBillAn.setAttribute('aria-pressed', mode === 'annual'  ? 'true' : 'false');
+  renderSummary();
+};
+
+/* ── Form validation ───────────────────────── */
+function validate() {
+  var ok = true;
+
+  function check(inputEl, errEl, testFn) {
+    if (!testFn(inputEl.value.trim())) {
+      inputEl.classList.add('error');
+      errEl.classList.add('on');
+      ok = false;
+    } else {
+      inputEl.classList.remove('error');
+      errEl.classList.remove('on');
+    }
+  }
+
+  check(
+    document.getElementById('co-fname-' + SID),
+    document.getElementById('co-fname-err-' + SID),
+    function(v) { return v.length >= 1; }
+  );
+  check(
+    document.getElementById('co-lname-' + SID),
+    document.getElementById('co-lname-err-' + SID),
+    function(v) { return v.length >= 1; }
+  );
+  check(
+    document.getElementById('co-email-' + SID),
+    document.getElementById('co-email-err-' + SID),
+    function(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+  );
+
+  return ok;
+}
+
+/* Live validation on blur */
+['co-fname','co-lname','co-email'].forEach(function(base) {
+  var inp = document.getElementById(base + '-' + SID);
+  if (inp) {
+    inp.addEventListener('blur', function() {
+      var errEl = document.getElementById(base + '-err-' + SID);
+      if (inp.value.trim().length > 0) {
+        inp.classList.remove('error');
+        if (errEl) errEl.classList.remove('on');
+      }
+    });
+  }
+});
+
+/* ── Form submit ───────────────────────────── */
+domForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  if (!validate()) return;
+
+  var p       = PLANS[currentPlan];
+  var isAnn   = currentBilling === 'annual';
+  var useStripe = {{ section.settings.use_stripe | json }};
+
+  /* Loading state */
+  domSubmit.classList.add('loading');
+  domSubmit.textContent = 'PROCESSING...';
+
+  if (useStripe) {
+    /* ── STRIPE PATH ───────────────────────────
+       Replace this block with your real Stripe
+       Checkout session creation API call.
+       The URL below is a placeholder.
+    ──────────────────────────────────────────── */
+    var stripeUrl = isAnn ? p.checkoutAnn : p.checkoutMo;
+    if (stripeUrl && stripeUrl.length > 0) {
+      setTimeout(function() { window.location.href = stripeUrl; }, 600);
+    } else {
+      /* Demo: show success state */
+      setTimeout(showSuccess, 1400);
+    }
+  } else {
+    /* ── SHOPIFY NATIVE CHECKOUT PATH ──────────
+       Adds the selected variant to cart then
+       redirects to /checkout
+    ──────────────────────────────────────────── */
+    var variantId = isAnn ? p.variantAnn : p.variantMo;
+
+    if (variantId && variantId.length > 0 && variantId !== '') {
+      /* Add to cart via AJAX then redirect */
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: parseInt(variantId, 10), quantity: 1 })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function() {
+        /* Pass email as checkout prefill */
+        var email = document.getElementById('co-email-' + SID).value;
+        var checkoutUrl = '/checkout?checkout[email]=' + encodeURIComponent(email);
+        window.location.href = checkoutUrl;
+      })
+      .catch(function() {
+        domSubmit.classList.remove('loading');
+        domSubmit.textContent = 'COMPLETE YOUR AUDIT →';
+        alert('Something went wrong adding to cart. Please try again.');
+      });
+    } else {
+      /* No variant configured — show success demo */
+      setTimeout(showSuccess, 1400);
+    }
+  }
+});
+
+/* ── Success state ─────────────────────────── */
+function showSuccess() {
+  domForm.style.display = 'none';
+  domSuccess.classList.add('on');
+  /* Scroll to top of section */
+  document.getElementById('apxco-' + SID).scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ── Init ──────────────────────────────────── */
+renderSummary();
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "APEX Checkout",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "🎨 Brand"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#0a0a08"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#d4ff00"
+    },
+    {
+      "type": "header",
+      "content": "🔗 URLs"
+    },
+    {
+      "type": "url",
+      "id": "app_url",
+      "label": "App URL (success button destination)"
+    },
+    {
+      "type": "header",
+      "content": "💳 Payment Method"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_stripe",
+      "label": "Use Stripe Checkout (external links)",
+      "default": false,
+      "info": "OFF = Shopify native checkout via variant IDs. ON = redirect to Stripe Checkout URLs."
+    },
+    {
+      "type": "header",
+      "content": "💰 Operator Pricing"
+    },
+    {
+      "type": "text",
+      "id": "price_op_mo",
+      "label": "Monthly Price",
+      "default": "12"
+    },
+    {
+      "type": "text",
+      "id": "price_op_ann",
+      "label": "Annual Price (per month)",
+      "default": "7"
+    },
+    {
+      "type": "text",
+      "id": "price_op_yr",
+      "label": "Annual Total Charged",
+      "default": "84"
+    },
+    {
+      "type": "header",
+      "content": "🛒 Shopify Variant IDs — Operator"
+    },
+    {
+      "type": "text",
+      "id": "variant_op_mo",
+      "label": "Monthly Variant ID",
+      "info": "Find in Shopify Admin → Products → your product → variant ID in the URL"
+    },
+    {
+      "type": "text",
+      "id": "variant_op_ann",
+      "label": "Annual Variant ID"
+    },
+    {
+      "type": "header",
+      "content": "🔗 Stripe Checkout URLs — Operator"
+    },
+    {
+      "type": "text",
+      "id": "checkout_url_op_mo",
+      "label": "Monthly Stripe Checkout Link",
+      "info": "From Stripe Dashboard → Payment Links or Checkout Sessions"
+    },
+    {
+      "type": "text",
+      "id": "checkout_url_op_ann",
+      "label": "Annual Stripe Checkout Link"
+    },
+    {
+      "type": "header",
+      "content": "👑 Apex Class Pricing"
+    },
+    {
+      "type": "text",
+      "id": "price_ap_mo",
+      "label": "Monthly Price",
+      "default": "29"
+    },
+    {
+      "type": "text",
+      "id": "price_ap_ann",
+      "label": "Annual Price (per month)",
+      "default": "17"
+    },
+    {
+      "type": "text",
+      "id": "price_ap_yr",
+      "label": "Annual Total Charged",
+      "default": "204"
+    },
+    {
+      "type": "header",
+      "content": "🛒 Shopify Variant IDs — Apex Class"
+    },
+    {
+      "type": "text",
+      "id": "variant_ap_mo",
+      "label": "Monthly Variant ID"
+    },
+    {
+      "type": "text",
+      "id": "variant_ap_ann",
+      "label": "Annual Variant ID"
+    },
+    {
+      "type": "header",
+      "content": "🔗 Stripe Checkout URLs — Apex Class"
+    },
+    {
+      "type": "text",
+      "id": "checkout_url_ap_mo",
+      "label": "Monthly Stripe Checkout Link"
+    },
+    {
+      "type": "text",
+      "id": "checkout_url_ap_ann",
+      "label": "Annual Stripe Checkout Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "APEX Checkout"
+    }
+  ]
+}
+{% endschema %}
